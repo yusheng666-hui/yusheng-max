@@ -1,7 +1,8 @@
 """User ORM model."""
 
-from sqlalchemy import Column, String, Float, Integer, DateTime, ARRAY
+from sqlalchemy import ARRAY, Column, DateTime, Float, Integer, String
 from sqlalchemy.sql import func
+
 from app.models import Base
 
 

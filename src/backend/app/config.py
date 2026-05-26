@@ -1,13 +1,12 @@
 """Application configuration loaded from environment variables."""
 
-from typing import List
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     # App
     debug: bool = True
-    cors_origins: List[str] = ["*"]
+    cors_origins: list[str] = ["*"]
 
     # Database
     database_url: str = "postgresql+asyncpg://posecraft:posecraft@localhost:5432/posecraft"

@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from . import health, recommend, poses, evaluate, users, presets, clone, pois
+from . import clone, evaluate, health, pois, poses, presets, recommend, users
 
 api_router = APIRouter(prefix="/api/v1")
 

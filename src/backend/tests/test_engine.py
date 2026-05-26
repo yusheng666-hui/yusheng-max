@@ -1,6 +1,7 @@
 """Tests for RecommendationEngine — rule-based pose matching."""
 
 import pytest
+
 from app.domain.recommendation.engine import RecommendationEngine
 
 
@@ -37,6 +38,7 @@ class TestRecommendationEngine:
     @pytest.mark.asyncio
     async def test_recommend_returns_empty_for_no_matching_poses(self, tmp_pose_db, tmp_path):
         import json
+
         empty_path = tmp_path / "empty.json"
         empty_path.write_text(json.dumps({"poses": []}), encoding="utf-8")
 

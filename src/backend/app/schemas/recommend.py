@@ -1,6 +1,5 @@
 """Recommendation Pydantic schemas — request/response models."""
 
-from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -25,13 +24,13 @@ class SceneFeaturesIn(BaseModel):
     time_of_day: str = "afternoon"
     weather: str = "sunny"
     crowd_density: float = 0.2
-    gps: Optional[list[float]] = None
+    gps: list[float] | None = None
 
 
 class RecommendRequest(BaseModel):
     request_id: str
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
+    user_id: str | None = None
+    session_id: str | None = None
     scene_features: SceneFeaturesIn = Field(default_factory=SceneFeaturesIn)
     user_context: dict = Field(default_factory=dict)
     top_k: int = Field(default=5, ge=1, le=10)
@@ -52,16 +51,16 @@ class PoseRecommendationOut(BaseModel):
     guidance_text: str = ""
     voice_guidance: list[str] = Field(default_factory=list)
     standing_position: list[float] = Field(default_factory=lambda: [0.0, 2.0, 0.0])
-    photographer_angle: Optional[dict] = None
-    composition_hints: Optional[dict] = None
-    lighting_tip: Optional[str] = None
-    camera_params: Optional[dict] = None
-    reference_image_url: Optional[str] = None
+    photographer_angle: dict | None = None
+    composition_hints: dict | None = None
+    lighting_tip: str | None = None
+    camera_params: dict | None = None
+    reference_image_url: str | None = None
 
 
 class RecommendResponse(BaseModel):
     request_id: str
     recommendations: list[PoseRecommendationOut]
-    session_id: Optional[str] = None
-    scene_detected: Optional[str] = None
+    session_id: str | None = None
+    scene_detected: str | None = None
     total_candidates: int = 0

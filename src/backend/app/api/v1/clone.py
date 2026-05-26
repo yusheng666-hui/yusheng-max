@@ -5,7 +5,8 @@ The backend stores results and cross-references with the pose library.
 """
 
 import logging
-from fastapi import APIRouter, HTTPException
+
+from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from app.domain.recommendation.engine import engine

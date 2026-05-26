@@ -1,8 +1,9 @@
 """Pose ORM model — stored pose library."""
 
-from sqlalchemy import Column, String, Float, Integer, DateTime, ARRAY, JSON
-from sqlalchemy.sql import func
+from sqlalchemy import ARRAY, Column, DateTime, Float, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.sql import func
+
 from app.models import Base
 
 

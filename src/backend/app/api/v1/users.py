@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.user import UserCreate, UserPreferences, UserOut
 from app.domain.user import service as user_svc
+from app.schemas.user import UserCreate, UserOut, UserPreferences
 
 router = APIRouter()
 
@@ -14,7 +14,7 @@ def register(data: UserCreate):
     try:
         return user_svc.create_user(data)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.get("/users/me", response_model=UserOut)

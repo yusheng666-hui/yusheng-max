@@ -6,7 +6,6 @@ Uses the local preset bundle (10 built-in presets) for matching.
 
 import json
 from pathlib import Path
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -16,10 +15,13 @@ router = APIRouter(prefix="/presets", tags=["presets"])
 # Resolve preset bundle path
 _PRESET_BUNDLE_PATH = (
     Path(__file__).resolve().parent.parent.parent.parent.parent
-    / "flutter_app" / "assets" / "presets" / "presets_bundle.json"
+    / "flutter_app"
+    / "assets"
+    / "presets"
+    / "presets_bundle.json"
 )
 
-_presets_cache: Optional[list[dict]] = None
+_presets_cache: list[dict] | None = None
 
 
 def _load_presets() -> list[dict]:
@@ -37,14 +39,13 @@ def _load_presets() -> list[dict]:
 
 # ── Schemas ──────────────────────────────────────────────────────
 
+
 class PhotoFeatures(BaseModel):
     brightness_mean: float = Field(default=0.5, ge=0.0, le=1.0)
     saturation_mean: float = Field(default=0.5, ge=0.0, le=1.0)
     contrast_rms: float = Field(default=0.3, ge=0.0, le=1.0)
-    color_temp_hint: str = Field(default="neutral",
-        description="One of: warm, cool, neutral")
-    skin_tone: str = Field(default="medium",
-        description="One of: fair, light, medium, tan, dark")
+    color_temp_hint: str = Field(default="neutral", description="One of: warm, cool, neutral")
+    skin_tone: str = Field(default="medium", description="One of: fair, light, medium, tan, dark")
     scene_class: str = Field(default="outdoor-nature")
     lighting: str = Field(default="front-light")
 
@@ -72,6 +73,7 @@ class PresetRecommendResponse(BaseModel):
 
 
 # ── Matching logic ───────────────────────────────────────────────
+
 
 def _match_presets(
     features: PhotoFeatures,
@@ -107,9 +109,7 @@ def _match_presets(
             reasons.append("光线匹配")
 
         # 3. Skin tone match (15%)
-        if features.skin_tone in bf.get("skin_tones", []) or "all" in bf.get(
-            "skin_tones", []
-        ):
+        if features.skin_tone in bf.get("skin_tones", []) or "all" in bf.get("skin_tones", []):
             score += 0.15
             reasons.append("肤色匹配")
 
@@ -154,6 +154,7 @@ def _match_presets(
 
 # ── Routes ───────────────────────────────────────────────────────
 
+
 @router.post("/recommend", response_model=PresetRecommendResponse)
 def recommend_presets(req: PresetRecommendRequest):
     """Recommend top-k presets for a given photo and user context."""
@@ -167,23 +168,17 @@ def recommend_presets(req: PresetRecommendRequest):
 
 @router.get("", response_model=dict)
 def list_presets(
-    scene: Optional[str] = None,
-    style: Optional[str] = None,
+    scene: str | None = None,
+    style: str | None = None,
 ):
     """List all available presets, optionally filtered by scene or style."""
     presets = _load_presets()
     filtered = presets
 
     if scene:
-        filtered = [
-            p for p in filtered
-            if scene in p.get("best_for", {}).get("scene_types", [])
-        ]
+        filtered = [p for p in filtered if scene in p.get("best_for", {}).get("scene_types", [])]
     if style:
-        filtered = [
-            p for p in filtered
-            if style in p.get("style_tags", [])
-        ]
+        filtered = [p for p in filtered if style in p.get("style_tags", [])]
 
     return {
         "total": len(filtered),

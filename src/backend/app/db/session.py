@@ -5,7 +5,8 @@ Phase 2 target. Phase 1 endpoints use JSON file store / in-memory data.
 
 from collections.abc import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
 from app.config import settings
 
 engine = create_async_engine(

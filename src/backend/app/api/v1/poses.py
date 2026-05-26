@@ -3,17 +3,25 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from app.domain.recommendation.engine import engine
-from app.schemas.pose import PoseListResponse, PoseDetailOut
+from app.schemas.pose import PoseDetailOut, PoseListResponse
 
 router = APIRouter()
 
 
 @router.get("/poses", response_model=PoseListResponse)
 async def list_poses(
-    scene: str = Query(default="", description="Filter by scene type (outdoor/street/indoor/beach/night)"),
-    style: str = Query(default="", description="Filter by style tag (fresh/cool/sweet/elegant/natural/casual)"),
-    difficulty: str = Query(default="", description="Filter by difficulty (beginner/intermediate/advanced)"),
-    category: str = Query(default="", description="Filter by category (solo/couple/friends/family)"),
+    scene: str = Query(
+        default="", description="Filter by scene type (outdoor/street/indoor/beach/night)"
+    ),
+    style: str = Query(
+        default="", description="Filter by style tag (fresh/cool/sweet/elegant/natural/casual)"
+    ),
+    difficulty: str = Query(
+        default="", description="Filter by difficulty (beginner/intermediate/advanced)"
+    ),
+    category: str = Query(
+        default="", description="Filter by category (solo/couple/friends/family)"
+    ),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
 ):
@@ -22,25 +30,13 @@ async def list_poses(
     filtered = all_poses
 
     if scene:
-        filtered = [
-            p for p in filtered
-            if scene in p["taxonomy"]["scene_type"]
-        ]
+        filtered = [p for p in filtered if scene in p["taxonomy"]["scene_type"]]
     if style:
-        filtered = [
-            p for p in filtered
-            if style in p["taxonomy"]["style"]
-        ]
+        filtered = [p for p in filtered if style in p["taxonomy"]["style"]]
     if difficulty:
-        filtered = [
-            p for p in filtered
-            if p["taxonomy"]["difficulty"] == difficulty
-        ]
+        filtered = [p for p in filtered if p["taxonomy"]["difficulty"] == difficulty]
     if category:
-        filtered = [
-            p for p in filtered
-            if p["taxonomy"]["category"] == category
-        ]
+        filtered = [p for p in filtered if p["taxonomy"]["category"] == category]
 
     total = len(filtered)
     start = (page - 1) * page_size

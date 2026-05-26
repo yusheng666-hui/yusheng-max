@@ -9,9 +9,7 @@ import json
 import logging
 import os
 import random
-from copy import deepcopy
 from dataclasses import dataclass
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -57,32 +55,41 @@ class RecommendationResult:
     standing_position: list
     photographer_tips: str
     voice_guidance: list
-    reference_image_url: Optional[str]
+    reference_image_url: str | None
 
 
 class RecommendationEngine:
     """Orchestrates rule-based pose recommendation for Phase 1."""
 
-    def __init__(self, pose_db_path: Optional[str] = None):
+    def __init__(self, pose_db_path: str | None = None):
         self._poses: dict = {}  # scene_key → list of pose dicts
         self._all_poses: list = []
         self._load_poses(pose_db_path)
 
-    def _load_poses(self, path: Optional[str] = None):
+    def _load_poses(self, path: str | None = None):
         """Load the local pose database JSON."""
         if path is None:
             # __file__ = src/backend/app/domain/recommendation/engine.py
             # Go up 4 levels to src/, then down to flutter_app/
-            path = os.path.normpath(os.path.join(
-                os.path.dirname(__file__), "..", "..", "..", "..",
-                "flutter_app", "assets", "poses", "local_pose_db.json",
-            ))
+            path = os.path.normpath(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "..",
+                    "..",
+                    "..",
+                    "..",
+                    "flutter_app",
+                    "assets",
+                    "poses",
+                    "local_pose_db.json",
+                )
+            )
 
         if not os.path.exists(path):
             logger.warning(f"Pose DB not found at {path}, engine will return empty results.")
             return
 
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
 
         self._all_poses = data.get("poses", [])
@@ -90,9 +97,7 @@ class RecommendationEngine:
             for scene in pose["taxonomy"]["scene_type"]:
                 self._poses.setdefault(scene, []).append(pose)
 
-        logger.info(
-            f"Loaded {len(self._all_poses)} poses across {len(self._poses)} scenes."
-        )
+        logger.info(f"Loaded {len(self._all_poses)} poses across {len(self._poses)} scenes.")
 
     async def recommend(
         self,
@@ -160,9 +165,7 @@ class RecommendationEngine:
             # Style match (up to +25)
             if preferred_styles:
                 style_hits = sum(
-                    1 for ps in preferred_styles
-                    for s in STYLE_MAP.get(ps, [ps])
-                    if s in style_tags
+                    1 for ps in preferred_styles for s in STYLE_MAP.get(ps, [ps]) if s in style_tags
                 )
                 score += min(style_hits * 8.0, 25.0)
 
@@ -189,7 +192,7 @@ class RecommendationEngine:
         scored.sort(key=lambda x: x[0], reverse=True)
 
         # MMR diversity re-ranking: penalize similar styles
-        selected = []
+        selected: list[tuple[float, dict]] = []
         remaining = scored[: min(len(scored), top_k * 6)]  # candidate pool
 
         for _ in range(min(top_k, len(remaining))):
@@ -206,8 +209,12 @@ class RecommendationEngine:
                 for i, (score, pose) in enumerate(remaining):
                     style_set = set(pose["taxonomy"]["style"])
                     max_sim = max(
-                        len(style_set & set(s["taxonomy"]["style"])) / len(style_set | set(s["taxonomy"]["style"]))
-                        if style_set | set(s["taxonomy"]["style"]) else 0
+                        (
+                            len(style_set & set(s["taxonomy"]["style"]))
+                            / len(style_set | set(s["taxonomy"]["style"]))
+                            if style_set | set(s["taxonomy"]["style"])
+                            else 0
+                        )
                         for _, s in selected
                     )
                     mmr = score - 0.3 * max_sim * 100
@@ -224,27 +231,29 @@ class RecommendationEngine:
             guidance = pose.get("guidance", {})
             camera = pose.get("camera_params", {})
 
-            results.append(RecommendationResult(
-                pose_id=pose["pose_id"],
-                rank=rank,
-                score=round(score, 1),
-                skeleton_3d={
-                    "keypoints": sk.get("keypoints", []),
-                    "anchor_point": sk.get("anchor_point", "mid_hip"),
-                },
-                guidance=guidance,
-                camera_params=camera,
-                name=pose["name"].get("zh", pose["pose_id"]),
-                description=pose["description"].get("zh", ""),
-                standing_position=[0.0, 2.0, 0.0],
-                photographer_tips=guidance.get("photographer_tips", {}).get("zh", ""),
-                voice_guidance=guidance.get("voice_guidance", []),
-                reference_image_url=None,
-            ))
+            results.append(
+                RecommendationResult(
+                    pose_id=pose["pose_id"],
+                    rank=rank,
+                    score=round(score, 1),
+                    skeleton_3d={
+                        "keypoints": sk.get("keypoints", []),
+                        "anchor_point": sk.get("anchor_point", "mid_hip"),
+                    },
+                    guidance=guidance,
+                    camera_params=camera,
+                    name=pose["name"].get("zh", pose["pose_id"]),
+                    description=pose["description"].get("zh", ""),
+                    standing_position=[0.0, 2.0, 0.0],
+                    photographer_tips=guidance.get("photographer_tips", {}).get("zh", ""),
+                    voice_guidance=guidance.get("voice_guidance", []),
+                    reference_image_url=None,
+                )
+            )
 
         return results
 
-    def get_pose_by_id(self, pose_id: str) -> Optional[dict]:
+    def get_pose_by_id(self, pose_id: str) -> dict | None:
         """Retrieve a single pose by its ID."""
         for pose in self._all_poses:
             if pose["pose_id"] == pose_id:

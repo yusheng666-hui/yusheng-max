@@ -1,10 +1,10 @@
 """Photo evaluation endpoint — scores captured photos and returns improvement tips."""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
-from app.schemas.evaluation import EvaluationRequest, EvaluationResponse
 from app.domain.evaluation import service as eval_svc
 from app.domain.user import service as user_svc
+from app.schemas.evaluation import EvaluationRequest, EvaluationResponse
 
 router = APIRouter()
 

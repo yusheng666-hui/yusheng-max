@@ -1,8 +1,8 @@
 """POI (Point of Interest) ORM model — photo spots."""
 
-from sqlalchemy import Column, String, Float, Integer, DateTime, ARRAY, JSON
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import ARRAY, Column, DateTime, Float, String
 from sqlalchemy.sql import func
+
 from app.models import Base
 
 

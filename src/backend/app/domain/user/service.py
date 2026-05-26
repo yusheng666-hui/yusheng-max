@@ -5,11 +5,10 @@ Phase 2 will migrate to PostgreSQL with async SQLAlchemy.
 
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Optional
 
-from app.schemas.user import UserCreate, UserPreferences, UserOut
+from app.schemas.user import UserCreate, UserOut, UserPreferences
 
 _DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "data"
 _USERS_FILE = _DATA_DIR / "users.json"
@@ -42,7 +41,7 @@ def _save():
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _default_user() -> dict:
@@ -71,28 +70,30 @@ def create_user(data: UserCreate) -> UserOut:
     _ensure_loaded()
     user_id = f"u{ uuid.uuid4().hex[:12]}"
     record = _default_user()
-    record.update({
-        "user_id": user_id,
-        "username": data.username or user_id,
-        "display_name": data.display_name or f"用户_{user_id[-4:]}",
-        "gender": data.gender,
-        "age_range": data.age_range,
-        "height_cm": data.height_cm,
-        "body_type": data.body_type,
-        "face_shape": data.face_shape,
-        "skin_tone": data.skin_tone,
-        "preferred_styles": data.preferred_styles,
-        "preferred_difficulty": data.preferred_difficulty,
-        "photography_level": data.photography_level,
-        "created_at": _now(),
-        "updated_at": _now(),
-    })
+    record.update(
+        {
+            "user_id": user_id,
+            "username": data.username or user_id,
+            "display_name": data.display_name or f"用户_{user_id[-4:]}",
+            "gender": data.gender,
+            "age_range": data.age_range,
+            "height_cm": data.height_cm,
+            "body_type": data.body_type,
+            "face_shape": data.face_shape,
+            "skin_tone": data.skin_tone,
+            "preferred_styles": data.preferred_styles,
+            "preferred_difficulty": data.preferred_difficulty,
+            "photography_level": data.photography_level,
+            "created_at": _now(),
+            "updated_at": _now(),
+        }
+    )
     _users[user_id] = record
     _save()
     return UserOut(**record)
 
 
-def get_user(user_id: str) -> Optional[UserOut]:
+def get_user(user_id: str) -> UserOut | None:
     """Fetch a user by ID."""
     _ensure_loaded()
     record = _users.get(user_id)
@@ -101,7 +102,7 @@ def get_user(user_id: str) -> Optional[UserOut]:
     return UserOut(**record)
 
 
-def update_preferences(user_id: str, prefs: UserPreferences) -> Optional[UserOut]:
+def update_preferences(user_id: str, prefs: UserPreferences) -> UserOut | None:
     """Update user style/difficulty preferences."""
     _ensure_loaded()
     record = _users.get(user_id)
@@ -147,7 +148,6 @@ def update_quality_score(user_id: str, new_score: float):
     record = _users.get(user_id)
     if record:
         old = record.get("quality_score", 5.0)
-        total = record.get("total_photos", 1) or 1
         # Exponential moving average: 70% old + 30% new
         record["quality_score"] = round(old * 0.7 + new_score * 0.3, 2)
         _save()

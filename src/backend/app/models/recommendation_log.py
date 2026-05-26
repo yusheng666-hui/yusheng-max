@@ -1,8 +1,9 @@
 """Recommendation log ORM model — tracks what was recommended to whom."""
 
-from sqlalchemy import Column, String, Float, Integer, DateTime, ARRAY, JSON
+from sqlalchemy import ARRAY, Column, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
+
 from app.models import Base
 
 

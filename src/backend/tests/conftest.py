@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 import pytest
 
@@ -20,7 +19,14 @@ def sample_poses() -> list[dict]:
             "skeleton_3d": {
                 "keypoints": [
                     {"id": 0, "name": "nose", "x": 0.5, "y": 0.3, "z": 0.0, "visibility": 1.0},
-                    {"id": 12, "name": "right_shoulder", "x": 0.55, "y": 0.4, "z": 0.0, "visibility": 1.0},
+                    {
+                        "id": 12,
+                        "name": "right_shoulder",
+                        "x": 0.55,
+                        "y": 0.4,
+                        "z": 0.0,
+                        "visibility": 1.0,
+                    },
                 ],
                 "anchor_point": "mid_hip",
             },
@@ -42,7 +48,14 @@ def sample_poses() -> list[dict]:
             "skeleton_3d": {
                 "keypoints": [
                     {"id": 0, "name": "nose", "x": 0.5, "y": 0.3, "z": 0.0, "visibility": 1.0},
-                    {"id": 11, "name": "left_shoulder", "x": 0.4, "y": 0.35, "z": 0.0, "visibility": 1.0},
+                    {
+                        "id": 11,
+                        "name": "left_shoulder",
+                        "x": 0.4,
+                        "y": 0.35,
+                        "z": 0.0,
+                        "visibility": 1.0,
+                    },
                 ],
                 "anchor_point": "mid_hip",
             },

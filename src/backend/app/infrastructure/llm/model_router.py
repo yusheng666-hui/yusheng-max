@@ -1,7 +1,6 @@
 """LLM model router — selects and routes to the appropriate LLM."""
 
 import logging
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 

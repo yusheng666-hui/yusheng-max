@@ -1,14 +1,15 @@
 """Pose recommendation endpoint — core API."""
 
 import logging
-from fastapi import APIRouter, Depends, HTTPException
+
+from fastapi import APIRouter, HTTPException
 
 from app.domain.recommendation.engine import engine
 from app.schemas.recommend import (
-    Skeleton3DOut,
     PoseRecommendationOut,
     RecommendRequest,
     RecommendResponse,
+    Skeleton3DOut,
 )
 
 logger = logging.getLogger(__name__)
@@ -17,6 +18,7 @@ router = APIRouter()
 
 
 # --- Endpoint ---
+
 
 @router.post("/recommend", response_model=RecommendResponse)
 async def recommend_poses(request: RecommendRequest):
@@ -37,22 +39,24 @@ async def recommend_poses(request: RecommendRequest):
         recommendations = []
         for r in results:
             cam = r.camera_params
-            recommendations.append(PoseRecommendationOut(
-                pose_id=r.pose_id,
-                rank=r.rank,
-                score=r.score,
-                name=r.name,
-                description=r.description,
-                skeleton_3d=Skeleton3DOut(
-                    keypoints=r.skeleton_3d["keypoints"],
-                    anchor_point=r.skeleton_3d.get("anchor_point", "mid_hip"),
-                ),
-                guidance_text=r.photographer_tips,
-                voice_guidance=r.voice_guidance,
-                standing_position=r.standing_position,
-                lighting_tip=r.guidance.get("lighting_tip"),
-                camera_params=cam,
-            ))
+            recommendations.append(
+                PoseRecommendationOut(
+                    pose_id=r.pose_id,
+                    rank=r.rank,
+                    score=r.score,
+                    name=r.name,
+                    description=r.description,
+                    skeleton_3d=Skeleton3DOut(
+                        keypoints=r.skeleton_3d["keypoints"],
+                        anchor_point=r.skeleton_3d.get("anchor_point", "mid_hip"),
+                    ),
+                    guidance_text=r.photographer_tips,
+                    voice_guidance=r.voice_guidance,
+                    standing_position=r.standing_position,
+                    lighting_tip=r.guidance.get("lighting_tip"),
+                    camera_params=cam,
+                )
+            )
 
         return RecommendResponse(
             request_id=request.request_id,
@@ -64,10 +68,11 @@ async def recommend_poses(request: RecommendRequest):
 
     except Exception as e:
         logger.exception("Recommendation failed")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 # --- Quick test endpoint ---
+
 
 @router.get("/recommend/health")
 async def recommend_health():

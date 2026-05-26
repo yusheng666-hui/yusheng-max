@@ -5,10 +5,11 @@ Phase 2: will integrate Qwen-VL for aesthetic analysis.
 """
 
 import random
+
 from app.schemas.evaluation import (
+    DimensionScore,
     EvaluationRequest,
     EvaluationResponse,
-    DimensionScore,
     PhotoFeatures,
 )
 
@@ -49,11 +50,13 @@ def evaluate(req: EvaluationRequest) -> EvaluationResponse:
         pose_fb = "建议放慢速度，对比AR骨骼线逐一调整关键点"
     else:
         pose_fb = "别急！先站稳，从脚位开始对齐AR指示线"
-    dims.append(DimensionScore(
-        score=round(pose_score, 1),
-        label_zh="姿势还原",
-        feedback_zh=pose_fb,
-    ))
+    dims.append(
+        DimensionScore(
+            score=round(pose_score, 1),
+            label_zh="姿势还原",
+            feedback_zh=pose_fb,
+        )
+    )
 
     # 2. Composition (weight: 20%)
     comp_score = pf.composition_score * 10.0
@@ -63,11 +66,13 @@ def evaluate(req: EvaluationRequest) -> EvaluationResponse:
         comp_fb = "构图可以优化：尝试用三分线网格调整主体位置"
     else:
         comp_fb = "建议开启构图辅助线，把人物放在三分线交点上"
-    dims.append(DimensionScore(
-        score=round(comp_score, 1),
-        label_zh="构图",
-        feedback_zh=comp_fb,
-    ))
+    dims.append(
+        DimensionScore(
+            score=round(comp_score, 1),
+            label_zh="构图",
+            feedback_zh=comp_fb,
+        )
+    )
 
     # 3. Lighting / exposure (weight: 20%)
     light_score = pf.lighting_quality * 10.0
@@ -79,18 +84,20 @@ def evaluate(req: EvaluationRequest) -> EvaluationResponse:
         light_fb = "建议调整曝光补偿或改变拍摄角度避开强光/暗部"
     else:
         light_fb = "光线条件不理想，试试换到顺光位置或开启HDR"
-    dims.append(DimensionScore(
-        score=round(light_score, 1),
-        label_zh="光影",
-        feedback_zh=light_fb,
-    ))
+    dims.append(
+        DimensionScore(
+            score=round(light_score, 1),
+            label_zh="光影",
+            feedback_zh=light_fb,
+        )
+    )
 
     # 4. Overall image quality (weight: 15%)
     quality = (
-        pf.sharpness * 3.0 +
-        pf.brightness_mean * 2.0 +
-        pf.saturation_mean * 2.0 +
-        (1.0 if pf.face_visible else 0.0) * 3.0
+        pf.sharpness * 3.0
+        + pf.brightness_mean * 2.0
+        + pf.saturation_mean * 2.0
+        + (1.0 if pf.face_visible else 0.0) * 3.0
     )
     quality_score = min(10.0, quality)
     if quality_score >= 7.0:
@@ -99,11 +106,13 @@ def evaluate(req: EvaluationRequest) -> EvaluationResponse:
         qual_fb = "画质尚可，建议持稳手机、确保对焦在人脸"
     else:
         qual_fb = "画面有些模糊或偏色，检查镜头是否干净，重新对焦"
-    dims.append(DimensionScore(
-        score=round(quality_score, 1),
-        label_zh="画质",
-        feedback_zh=qual_fb,
-    ))
+    dims.append(
+        DimensionScore(
+            score=round(quality_score, 1),
+            label_zh="画质",
+            feedback_zh=qual_fb,
+        )
+    )
 
     # 5. Expression / mood (weight: 15%) — Phase 1 heuristic
     if pf.face_visible and pf.face_count > 0:
@@ -117,15 +126,17 @@ def evaluate(req: EvaluationRequest) -> EvaluationResponse:
     else:
         expr_score = 5.0
         expr_fb = "没检测到面部，如果是侧脸/背影/剪影则无需担心"
-    dims.append(DimensionScore(
-        score=round(expr_score, 1),
-        label_zh="表现力",
-        feedback_zh=expr_fb,
-    ))
+    dims.append(
+        DimensionScore(
+            score=round(expr_score, 1),
+            label_zh="表现力",
+            feedback_zh=expr_fb,
+        )
+    )
 
     # Overall score (weighted average)
     weights = [0.30, 0.20, 0.20, 0.15, 0.15]
-    overall = sum(d.score * w for d, w in zip(dims, weights))
+    overall = sum(d.score * w for d, w in zip(dims, weights, strict=False))
 
     # ── Improvement tips ────────────────────────────────────────
     tips: list[str] = []

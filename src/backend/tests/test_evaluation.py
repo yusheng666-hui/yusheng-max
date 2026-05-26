@@ -1,7 +1,6 @@
 """Tests for evaluation domain service."""
 
-import pytest
-from app.domain.evaluation.service import evaluate, _grade, _recommend_preset
+from app.domain.evaluation.service import _grade, _recommend_preset, evaluate
 from app.schemas.evaluation import EvaluationRequest, PhotoFeatures
 
 
