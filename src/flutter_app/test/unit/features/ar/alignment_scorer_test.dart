@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_app/features/ar/domain/services/alignment_scorer.dart';
+import 'package:pose_craft/features/ar/domain/services/alignment_scorer.dart';
 
 /// Build a keypoint with sensible defaults.
 AlignKeypoint kp(int id, {double x = 0, double y = 0, double z = 0, double visibility = 1.0}) {

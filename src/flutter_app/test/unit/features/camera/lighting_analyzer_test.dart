@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_app/features/camera/domain/services/lighting_analyzer.dart';
+import 'package:pose_craft/features/camera/domain/services/lighting_analyzer.dart';
 
 /// Minimal fake to satisfy the CameraImage interface used by LightingAnalyzer.
 class FakePlane {

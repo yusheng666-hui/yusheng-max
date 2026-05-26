@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_app/features/evaluation/domain/services/preset_recommendation_service.dart';
-import 'package:flutter_app/features/evaluation/domain/services/preset_loader.dart';
-import 'package:flutter_app/features/camera/domain/services/lighting_analyzer.dart';
-import 'package:flutter_app/shared/models/preset.dart';
+import 'package:pose_craft/features/evaluation/domain/services/preset_recommendation_service.dart';
+import 'package:pose_craft/features/evaluation/domain/services/preset_loader.dart';
+import 'package:pose_craft/features/camera/domain/services/lighting_analyzer.dart';
+import 'package:pose_craft/shared/models/preset.dart';
 
 /// Fake loader that returns a controlled list of presets instead of reading assets.
 class FakePresetLoader extends PresetLoader {

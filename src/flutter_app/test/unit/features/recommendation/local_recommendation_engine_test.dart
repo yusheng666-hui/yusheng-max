@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_app/features/recommendation/domain/services/local_recommendation_engine.dart';
-import 'package:flutter_app/features/recommendation/domain/services/local_pose_loader.dart';
+import 'package:pose_craft/features/recommendation/domain/services/local_recommendation_engine.dart';
+import 'package:pose_craft/features/recommendation/domain/services/local_pose_loader.dart';
 
 /// Build a minimal [LocalPose] for testing.
 LocalPose _makePose({
