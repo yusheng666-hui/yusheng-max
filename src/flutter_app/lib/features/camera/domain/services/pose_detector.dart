@@ -1,7 +1,7 @@
 /// Service that wraps google_mlkit_pose_detection for real-time body keypoint detection.
 ///
 /// Processes camera frames and emits detected [DetectedPose] objects containing
-/// 33 MediaPipe-compatible keypoints.
+/// 33 MediaPipe-compatible keypoints. Supports multi-person detection (up to 5 poses).
 
 import 'dart:async';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
@@ -59,7 +59,7 @@ class PoseDetectorConfig {
 
   const PoseDetectorConfig({
     this.mode = PoseDetectionMode.stream,
-    this.maxPoses = 1,
+    this.maxPoses = 5,
   });
 }
 
@@ -78,8 +78,8 @@ class PoseDetector {
   bool _isInitialized = false;
   bool _isProcessing = false;
 
-  /// Callback fired when a pose is detected from a frame.
-  void Function(DetectedPose pose)? onPoseDetected;
+  /// Callback fired when poses are detected from a frame.
+  void Function(List<DetectedPose> poses)? onPosesDetected;
 
   PoseDetector({this.config = const PoseDetectorConfig()});
 
@@ -98,25 +98,26 @@ class PoseDetector {
 
   /// Process a single camera frame for pose detection.
   /// Skips frame if already processing (non-blocking throttle).
-  Future<DetectedPose?> processFrame(CameraImage image) async {
-    if (!_isInitialized || _isProcessing) return null;
+  /// Returns list of detected poses (empty if none found).
+  Future<List<DetectedPose>> processFrame(CameraImage image) async {
+    if (!_isInitialized || _isProcessing) return [];
     _isProcessing = true;
 
     try {
       final inputImage = _cameraImageToInputImage(image);
-      if (inputImage == null) return null;
+      if (inputImage == null) return [];
 
       final poses = await _detector!.processImage(inputImage);
 
       if (poses.isNotEmpty) {
-        final detected = DetectedPose.fromMlKit(poses.first);
-        onPoseDetected?.call(detected);
+        final detected = poses.map((p) => DetectedPose.fromMlKit(p)).toList();
+        onPosesDetected?.call(detected);
         return detected;
       }
-      return null;
+      return [];
     } catch (e) {
       // Frame processing errors (e.g. invalid format) are non-fatal
-      return null;
+      return [];
     } finally {
       _isProcessing = false;
     }

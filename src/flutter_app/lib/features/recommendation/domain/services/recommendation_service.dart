@@ -44,6 +44,7 @@ class RecommendationService {
   final Map<String, dynamic> _userContext = {
     'preferred_styles': ['natural', 'fresh'],
     'preferred_difficulty': 'beginner',
+    'person_count': 1,
   };
 
   RecommendationResponse? get lastResponse => _lastResponse;
@@ -58,6 +59,11 @@ class RecommendationService {
   /// Set difficulty preference.
   void setPreferredDifficulty(String difficulty) {
     _userContext['preferred_difficulty'] = difficulty;
+  }
+
+  /// Set person count for multi-person modes.
+  void setPersonCount(int count) {
+    _userContext['person_count'] = count;
   }
 
   /// Store the latest recommendation response.

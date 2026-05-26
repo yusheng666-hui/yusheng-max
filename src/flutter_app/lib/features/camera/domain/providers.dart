@@ -48,8 +48,17 @@ final poseDetectorProvider = Provider<PoseDetector>((ref) {
   return PoseDetector();
 });
 
-/// Latest detected user pose from the camera stream.
-final detectedPoseProvider = StateProvider<DetectedPose?>((ref) => null);
+/// Latest detected user poses from the camera stream (empty list = no detection).
+final detectedPosesProvider = StateProvider<List<DetectedPose>>((ref) => []);
+
+/// Number of people currently detected in frame.
+final detectedPersonCountProvider = Provider<int>((ref) {
+  final poses = ref.watch(detectedPosesProvider);
+  return poses.where((p) => p.isReliable).length;
+});
+
+/// User-selected person-count mode: solo, couple, friends, or family.
+final personCountModeProvider = StateProvider<String>((ref) => 'solo');
 
 /// Whether the pose detector is currently processing a frame.
 final isPoseDetectingProvider = StateProvider<bool>((ref) => false);
@@ -278,12 +287,13 @@ final expressionDetectorProvider = Provider<ExpressionDetector>((ref) {
 final expressionResultProvider = StateProvider<ExpressionResult?>((ref) => null);
 
 /// Current skeleton alignment between user pose and active recommendation.
+/// Uses the first (primary) detected person for scoring.
 final alignmentResultProvider = Provider<AlignmentResult?>((ref) {
-  final detectedPose = ref.watch(detectedPoseProvider);
+  final detectedPoses = ref.watch(detectedPosesProvider);
   final recommendations = ref.watch(currentRecommendationsProvider);
   final activeIndex = ref.watch(activeRecommendationIndexProvider);
 
-  if (detectedPose == null ||
+  if (detectedPoses.isEmpty ||
       recommendations == null ||
       recommendations.recommendations.isEmpty) {
     return null;
@@ -291,12 +301,11 @@ final alignmentResultProvider = Provider<AlignmentResult?>((ref) {
   if (activeIndex >= recommendations.recommendations.length) return null;
 
   final target = recommendations.recommendations[activeIndex];
+  final primary = detectedPoses.first;
 
   final userKps = <AlignKeypoint>[];
-  final keypoints = detectedPose.keypoints;
-
-  for (int i = 0; i < keypoints.length && i < 33; i++) {
-    final k = keypoints[i];
+  for (int i = 0; i < primary.keypoints.length && i < 33; i++) {
+    final k = primary.keypoints[i];
     userKps.add(AlignKeypoint(
       id: i,
       x: k.x,

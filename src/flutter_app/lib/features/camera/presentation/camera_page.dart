@@ -19,6 +19,7 @@ import '../domain/services/hybrid_scene_analyzer.dart';
 import '../domain/services/lighting_analyzer.dart';
 import '../domain/services/expression_detector.dart';
 import 'widgets/expression_guide_overlay.dart';
+import 'widgets/person_count_selector.dart';
 import '../../../core/api_client.dart';
 import '../../../core/connectivity_checker.dart';
 import '../../../core/tts_service.dart';
@@ -141,7 +142,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
   Future<void> _initPoseDetector() async {
     _poseDetector = ref.read(poseDetectorProvider);
     await _poseDetector!.initialize();
-    _poseDetector!.onPoseDetected = _onPoseDetected;
+    _poseDetector!.onPosesDetected = _onPosesDetected;
   }
 
   /// Start connectivity monitoring for online/offline mode switching.
@@ -200,9 +201,9 @@ class _CameraPageState extends ConsumerState<CameraPage>
     }
   }
 
-  /// Called when the pose detector finds a pose in a frame.
-  void _onPoseDetected(DetectedPose pose) {
-    ref.read(detectedPoseProvider.notifier).state = pose;
+  /// Called when the pose detector finds poses in a frame.
+  void _onPosesDetected(List<DetectedPose> poses) {
+    ref.read(detectedPosesProvider.notifier).state = poses;
   }
 
   /// Periodic scene analysis and recommendation refresh.
@@ -271,6 +272,15 @@ class _CameraPageState extends ConsumerState<CameraPage>
     try {
       final apiClient = ref.read(apiClientProvider);
       final service = ref.read(recommendationServiceProvider);
+      // Sync person count mode for cloud recommendation
+      final mode = ref.read(personCountModeProvider);
+      final personCount = switch (mode) {
+        'couple' => 2,
+        'friends' => 3,
+        'family' => 4,
+        _ => 1,
+      };
+      service.setPersonCount(personCount);
       final richResult = ref.read(richSceneResultProvider);
       final timeOfDay = scene?.timeOfDay ?? _timeOfDayFromHour(DateTime.now().hour);
 
@@ -322,6 +332,9 @@ class _CameraPageState extends ConsumerState<CameraPage>
     try {
       final engine = ref.read(localEngineProvider);
       final service = ref.read(recommendationServiceProvider);
+      final mode = ref.read(personCountModeProvider);
+      // Map mode to category — null for solo (shows all solo/expression/advanced_solo)
+      final category = mode == 'solo' ? null : mode;
 
       final response = engine.recommend(
         sceneClass: sceneClass,
@@ -329,6 +342,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
             (service.userContext['preferred_styles'] as List<dynamic>?) ?? []),
         preferredDifficulty:
             service.userContext['preferred_difficulty'] as String? ?? 'beginner',
+        category: category,
       );
 
       service.updateResponse(response);
@@ -494,6 +508,13 @@ class _CameraPageState extends ConsumerState<CameraPage>
       ref.read(ttsServiceProvider).setMuted(next);
     });
 
+    // Re-fetch recommendations when person-count mode changes
+    ref.listen(personCountModeProvider, (prev, next) {
+      if (prev != next) {
+        _fetchRecommendations();
+      }
+    });
+
     // TTS: speak lighting tips when conditions change significantly
     ref.listen(lightingAnalysisResultProvider, (prev, next) {
       if (next != null &&
@@ -616,6 +637,14 @@ class _CameraPageState extends ConsumerState<CameraPage>
                 ),
               ],
             ),
+          ),
+
+          // Person-count mode selector
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 56,
+            left: 0,
+            right: 0,
+            child: const Center(child: PersonCountSelector()),
           ),
 
           // Loading indicator

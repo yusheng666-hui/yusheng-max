@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../camera/domain/providers.dart';
+import '../../../camera/domain/services/pose_detector.dart';
 import '../../../shared/models/recommendation.dart';
 
 /// AR skeleton overlay rendered on top of the camera preview.
@@ -15,7 +16,7 @@ class ArOverlay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recommendations = ref.watch(currentRecommendationsProvider);
-    final detectedPose = ref.watch(detectedPoseProvider);
+    final detectedPoses = ref.watch(detectedPosesProvider);
     final activeIndex = ref.watch(activeRecommendationIndexProvider);
     final alignment = ref.watch(alignmentResultProvider);
 
@@ -32,7 +33,7 @@ class ArOverlay extends ConsumerWidget {
           child: CustomPaint(
             painter: _SkeletonOverlayPainter(
               targetPose: activeRec,
-              userPose: detectedPose,
+              userPoses: detectedPoses,
             ),
             size: size,
           ),
@@ -70,11 +71,20 @@ const _poseConnections = [
   [9, 10],
 ];
 
+/// Per-person skeleton colors (up to 5 people).
+const _userColors = [
+  Colors.cyanAccent,
+  Colors.magentaAccent,
+  Colors.yellowAccent,
+  Colors.orangeAccent,
+  Colors.limeAccent,
+];
+
 class _SkeletonOverlayPainter extends CustomPainter {
   final PoseRecommendation? targetPose;
-  final dynamic userPose;
+  final List<DetectedPose> userPoses;
 
-  _SkeletonOverlayPainter({this.targetPose, this.userPose});
+  _SkeletonOverlayPainter({this.targetPose, this.userPoses = const []});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -85,12 +95,13 @@ class _SkeletonOverlayPainter extends CustomPainter {
       );
     }
 
-    if (userPose != null) {
-      final keypoints = _extractUserKeypoints(userPose, size);
+    for (int i = 0; i < userPoses.length && i < _userColors.length; i++) {
+      final keypoints = _extractUserKeypoints(userPoses[i], size);
       if (keypoints.isNotEmpty) {
+        final color = _userColors[i];
         _drawSkeleton(
           canvas, size, keypoints,
-          Colors.cyanAccent.withOpacity(0.9), Colors.cyanAccent.withOpacity(0.3), 2.5,
+          color.withOpacity(0.9), color.withOpacity(0.3), 2.5,
         );
       }
     }
@@ -98,15 +109,13 @@ class _SkeletonOverlayPainter extends CustomPainter {
     _drawCompositionGrid(canvas, size);
   }
 
-  List<_PaintKeypoint> _extractUserKeypoints(dynamic pose, Size size) {
+  List<_PaintKeypoint> _extractUserKeypoints(DetectedPose pose, Size size) {
     try {
-      final kps = pose.keypoints as List<dynamic>?;
-      if (kps == null) return [];
-      return kps.map((k) {
+      return pose.keypoints.map((k) {
         return _PaintKeypoint(
-          x: (k.x as double) * size.width,
-          y: (k.y as double) * size.height,
-          likelihood: k.likelihood as double,
+          x: k.x * size.width,
+          y: k.y * size.height,
+          likelihood: k.likelihood,
         );
       }).toList();
     } catch (_) {
