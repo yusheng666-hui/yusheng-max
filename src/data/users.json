@@ -1,0 +1,70 @@
+{
+  "users": {
+    "ud70d20051041": {
+      "username": "test",
+      "display_name": "Test",
+      "gender": "unspecified",
+      "age_range": "18-25",
+      "height_cm": 165.0,
+      "body_type": "average",
+      "face_shape": "oval",
+      "skin_tone": "medium",
+      "preferred_styles": [
+        "natural"
+      ],
+      "preferred_difficulty": "beginner",
+      "photography_level": "beginner",
+      "quality_score": 5.0,
+      "total_sessions": 0,
+      "total_photos": 0,
+      "created_at": "2026-05-25T09:49:20.467837+00:00",
+      "updated_at": "2026-05-25T09:49:20.467837+00:00",
+      "user_id": "ud70d20051041"
+    },
+    "uff040b248355": {
+      "username": "uff040b248355",
+      "display_name": "用户_8355",
+      "gender": "unspecified",
+      "age_range": "18-25",
+      "height_cm": 165.0,
+      "body_type": "average",
+      "face_shape": "oval",
+      "skin_tone": "medium",
+      "preferred_styles": [
+        "natural",
+        "fresh"
+      ],
+      "preferred_difficulty": "beginner",
+      "photography_level": "beginner",
+      "quality_score": 5.0,
+      "total_sessions": 0,
+      "total_photos": 0,
+      "created_at": "2026-05-25T09:49:20.745977+00:00",
+      "updated_at": "2026-05-25T09:49:20.745977+00:00",
+      "user_id": "uff040b248355"
+    },
+    "u19f0b4c79844": {
+      "username": "photo_test",
+      "display_name": "PhotoTester",
+      "gender": "unspecified",
+      "age_range": "18-25",
+      "height_cm": 165.0,
+      "body_type": "average",
+      "face_shape": "oval",
+      "skin_tone": "medium",
+      "preferred_styles": [
+        "cool",
+        "elegant"
+      ],
+      "preferred_difficulty": "beginner",
+      "photography_level": "hobbyist",
+      "quality_score": 5.84,
+      "total_sessions": 0,
+      "total_photos": 1,
+      "created_at": "2026-05-25T09:52:18.987820+00:00",
+      "updated_at": "2026-05-25T09:52:19.456832+00:00",
+      "user_id": "u19f0b4c79844"
+    }
+  },
+  "updated_at": "2026-05-25T09:52:19.456832+00:00"
+}

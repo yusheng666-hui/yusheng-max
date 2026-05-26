@@ -1,0 +1,226 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../camera/domain/providers.dart';
+import '../../domain/services/recommendation_service.dart';
+
+/// Bottom panel displaying the pose recommendation carousel.
+///
+/// Shows 5 pose cards the user can swipe through.
+/// Each card shows the pose name, camera mode, and guidance text.
+class RecommendationPanel extends ConsumerWidget {
+  const RecommendationPanel({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final response = ref.watch(currentRecommendationsProvider);
+    final activeIndex = ref.watch(activeRecommendationIndexProvider);
+
+    if (response == null || response.recommendations.isEmpty) {
+      return Container(
+        height: 130,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white54,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '正在分析场景...',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final recs = response.recommendations;
+
+    return Container(
+      height: 130,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.65),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header: scene + pose count
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: [
+                Icon(Icons.auto_awesome, size: 14, color: Colors.amber.withOpacity(0.9)),
+                const SizedBox(width: 6),
+                Text(
+                  response.sceneDetected ?? '当前场景',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    fontSize: 11,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '${recs.length} 个推荐',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.4),
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Carousel of pose cards
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: recs.length,
+              itemBuilder: (context, index) {
+                final rec = recs[index];
+                final isActive = index == activeIndex;
+
+                return GestureDetector(
+                  onTap: () {
+                    ref.read(activeRecommendationIndexProvider.notifier).state = index;
+                  },
+                  child: PoseCard(
+                    recommendation: rec,
+                    isActive: isActive,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Individual pose card in the carousel.
+class PoseCard extends StatelessWidget {
+  final PoseRecommendation recommendation;
+  final bool isActive;
+
+  const PoseCard({
+    super.key,
+    required this.recommendation,
+    this.isActive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cam = recommendation.cameraParams;
+    final camLabel = cam != null
+        ? '${cam.beginnerMode} ISO${cam.advancedIso}'
+        : '';
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: 110,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: isActive
+            ? Colors.white.withOpacity(0.15)
+            : Colors.white.withOpacity(0.05),
+        border: isActive
+            ? Border.all(color: Colors.amber.withOpacity(0.8), width: 2)
+            : Border.all(color: Colors.white24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Rank badge + score
+          Row(
+            children: [
+              Container(
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isActive ? Colors.amber : Colors.white24,
+                ),
+                child: Center(
+                  child: Text(
+                    '${recommendation.rank}',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: isActive ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '${recommendation.score.toInt()}分',
+                style: TextStyle(
+                  fontSize: 9,
+                  color: Colors.white.withOpacity(0.5),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          // Pose name
+          Text(
+            recommendation.name.isNotEmpty ? recommendation.name : recommendation.poseId,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: isActive ? Colors.white : Colors.white70,
+              fontSize: 11,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+          const SizedBox(height: 2),
+          // Camera param hint
+          if (camLabel.isNotEmpty)
+            Text(
+              camLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.amber.withOpacity(0.7),
+                fontSize: 9,
+              ),
+            ),
+          const Spacer(),
+          // Guidance snippet
+          Text(
+            recommendation.guidanceText,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.5),
+              fontSize: 9,
+              height: 1.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

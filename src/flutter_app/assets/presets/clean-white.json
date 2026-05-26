@@ -1,0 +1,69 @@
+{
+  "preset_id": "clean-white",
+  "name": {
+    "zh": "素颜白",
+    "en": "Clean White"
+  },
+  "version": 1,
+  "status": "published",
+  "category": "style",
+  "style_tags": [
+    "bright",
+    "clean",
+    "airy",
+    "soft",
+    "minimal"
+  ],
+  "lut_files": {
+    "cube_33": "assets/presets/clean-white.cube",
+    "hald_8": "assets/presets/clean-white_hald.png"
+  },
+  "adjustments": {
+    "exposure": 0.25,
+    "contrast": -10,
+    "highlights": -5,
+    "shadows": 15,
+    "whites": 0,
+    "blacks": -10,
+    "saturation": -10,
+    "vibrance": -5,
+    "temperature": -150,
+    "tint": 3,
+    "sharpness": -2,
+    "noise_reduction": 3,
+    "vignette": 0,
+    "grain": 0
+  },
+  "best_for": {
+    "scene_types": [
+      "indoor",
+      "indoor-home",
+      "beach",
+      "minimalist"
+    ],
+    "lighting": [
+      "front-light",
+      "soft-light",
+      "bright",
+      "window-light"
+    ],
+    "skin_tones": [
+      "fair",
+      "light"
+    ],
+    "styles": [
+      "fresh",
+      "sweet",
+      "natural"
+    ]
+  },
+  "preview_image": "assets/presets/clean-white_preview.jpg",
+  "metadata": {
+    "author": "posecraft_team",
+    "created_at": "2026-05-25T00:00:00Z",
+    "usage_count": 0,
+    "avg_rating": 0.0,
+    "is_premium": false,
+    "price": null
+  }
+}

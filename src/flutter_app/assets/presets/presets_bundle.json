@@ -1,0 +1,612 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-25T00:00:00Z",
+  "total_presets": 10,
+  "presets": [
+    {
+      "preset_id": "natural",
+      "name": {
+        "zh": "自然",
+        "en": "Natural"
+      },
+      "style_tags": [
+        "natural",
+        "clean"
+      ],
+      "best_for": {
+        "scene_types": [
+          "outdoor-nature",
+          "street",
+          "indoor",
+          "beach"
+        ],
+        "lighting": [
+          "front-light",
+          "overcast",
+          "soft-light",
+          "golden-hour"
+        ],
+        "skin_tones": [
+          "fair",
+          "light",
+          "medium",
+          "tan",
+          "dark"
+        ],
+        "styles": [
+          "natural",
+          "casual",
+          "elegant"
+        ]
+      },
+      "adjustments": {
+        "exposure": 0.05,
+        "contrast": 2,
+        "highlights": -5,
+        "shadows": 5,
+        "whites": 0,
+        "blacks": 0,
+        "saturation": 0,
+        "vibrance": 3,
+        "temperature": 0,
+        "tint": 0,
+        "sharpness": 2,
+        "noise_reduction": 0,
+        "vignette": -3,
+        "grain": 0
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/natural.cube",
+        "hald_8": "assets/presets/natural_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    },
+    {
+      "preset_id": "jp-fresh",
+      "name": {
+        "zh": "日系清新",
+        "en": "Japanese Fresh"
+      },
+      "style_tags": [
+        "fresh",
+        "clean",
+        "bright",
+        "low-saturation",
+        "cool"
+      ],
+      "best_for": {
+        "scene_types": [
+          "outdoor-nature",
+          "garden",
+          "beach",
+          "indoor-cafe"
+        ],
+        "lighting": [
+          "front-light",
+          "overcast",
+          "soft-light"
+        ],
+        "skin_tones": [
+          "fair",
+          "light",
+          "medium"
+        ],
+        "styles": [
+          "fresh",
+          "sweet",
+          "natural"
+        ]
+      },
+      "adjustments": {
+        "exposure": 0.2,
+        "contrast": -8,
+        "highlights": -15,
+        "shadows": 12,
+        "whites": -5,
+        "blacks": 5,
+        "saturation": -12,
+        "vibrance": -5,
+        "temperature": -300,
+        "tint": 5,
+        "sharpness": 0,
+        "noise_reduction": 2,
+        "vignette": -5,
+        "grain": 0
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/jp-fresh.cube",
+        "hald_8": "assets/presets/jp-fresh_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    },
+    {
+      "preset_id": "film-warm",
+      "name": {
+        "zh": "暖调胶片",
+        "en": "Warm Film"
+      },
+      "style_tags": [
+        "warm",
+        "vintage",
+        "faded",
+        "grain",
+        "film"
+      ],
+      "best_for": {
+        "scene_types": [
+          "street",
+          "indoor-cafe",
+          "indoor-home",
+          "night-neon"
+        ],
+        "lighting": [
+          "back-light",
+          "warm-light",
+          "golden-hour"
+        ],
+        "skin_tones": [
+          "fair",
+          "light",
+          "medium",
+          "tan"
+        ],
+        "styles": [
+          "cool",
+          "elegant",
+          "casual"
+        ]
+      },
+      "adjustments": {
+        "exposure": 0.0,
+        "contrast": -5,
+        "highlights": -20,
+        "shadows": 15,
+        "whites": -10,
+        "blacks": 10,
+        "saturation": -8,
+        "vibrance": -3,
+        "temperature": 400,
+        "tint": 8,
+        "sharpness": -3,
+        "noise_reduction": 0,
+        "vignette": -15,
+        "grain": 8
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/film-warm.cube",
+        "hald_8": "assets/presets/film-warm_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    },
+    {
+      "preset_id": "bw-high",
+      "name": {
+        "zh": "高对比黑白",
+        "en": "B&W High Contrast"
+      },
+      "style_tags": [
+        "black-and-white",
+        "high-contrast",
+        "dramatic",
+        "classic"
+      ],
+      "best_for": {
+        "scene_types": [
+          "street",
+          "indoor",
+          "night-scene",
+          "urban"
+        ],
+        "lighting": [
+          "side-light",
+          "hard-light",
+          "back-light"
+        ],
+        "skin_tones": [
+          "all"
+        ],
+        "styles": [
+          "cool",
+          "elegant"
+        ]
+      },
+      "adjustments": {
+        "exposure": 0.0,
+        "contrast": 15,
+        "highlights": 10,
+        "shadows": -10,
+        "whites": 5,
+        "blacks": -5,
+        "saturation": -100,
+        "vibrance": 0,
+        "temperature": 0,
+        "tint": 0,
+        "sharpness": 8,
+        "noise_reduction": 0,
+        "vignette": -10,
+        "grain": 5
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/bw-high.cube",
+        "hald_8": "assets/presets/bw-high_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    },
+    {
+      "preset_id": "warm-portrait",
+      "name": {
+        "zh": "暖调人像",
+        "en": "Warm Portrait"
+      },
+      "style_tags": [
+        "warm",
+        "soft",
+        "portrait",
+        "smooth",
+        "glowing"
+      ],
+      "best_for": {
+        "scene_types": [
+          "indoor",
+          "indoor-home",
+          "indoor-cafe",
+          "golden-hour"
+        ],
+        "lighting": [
+          "front-light",
+          "soft-light",
+          "warm-light",
+          "window-light"
+        ],
+        "skin_tones": [
+          "fair",
+          "light",
+          "medium",
+          "tan"
+        ],
+        "styles": [
+          "sweet",
+          "elegant",
+          "natural"
+        ]
+      },
+      "adjustments": {
+        "exposure": 0.1,
+        "contrast": -5,
+        "highlights": -8,
+        "shadows": 8,
+        "whites": -3,
+        "blacks": 3,
+        "saturation": -5,
+        "vibrance": 5,
+        "temperature": 250,
+        "tint": 10,
+        "sharpness": -5,
+        "noise_reduction": 5,
+        "vignette": -8,
+        "grain": 0
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/warm-portrait.cube",
+        "hald_8": "assets/presets/warm-portrait_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    },
+    {
+      "preset_id": "cool-mood",
+      "name": {
+        "zh": "冷调情绪",
+        "en": "Cool Mood"
+      },
+      "style_tags": [
+        "cool",
+        "moody",
+        "blue",
+        "dark",
+        "emotional"
+      ],
+      "best_for": {
+        "scene_types": [
+          "night-scene",
+          "urban-street",
+          "indoor",
+          "rainy"
+        ],
+        "lighting": [
+          "low-light",
+          "night",
+          "overcast",
+          "neon"
+        ],
+        "skin_tones": [
+          "fair",
+          "light",
+          "medium"
+        ],
+        "styles": [
+          "cool",
+          "elegant"
+        ]
+      },
+      "adjustments": {
+        "exposure": -0.1,
+        "contrast": 5,
+        "highlights": -10,
+        "shadows": -5,
+        "whites": -8,
+        "blacks": -3,
+        "saturation": -15,
+        "vibrance": -8,
+        "temperature": -500,
+        "tint": -5,
+        "sharpness": 3,
+        "noise_reduction": 2,
+        "vignette": -12,
+        "grain": 3
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/cool-mood.cube",
+        "hald_8": "assets/presets/cool-mood_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    },
+    {
+      "preset_id": "hk-retro",
+      "name": {
+        "zh": "复古港风",
+        "en": "HK Retro"
+      },
+      "style_tags": [
+        "retro",
+        "vintage",
+        "hong-kong",
+        "film",
+        "nostalgic"
+      ],
+      "best_for": {
+        "scene_types": [
+          "street",
+          "night-neon",
+          "indoor-cafe",
+          "urban"
+        ],
+        "lighting": [
+          "warm-light",
+          "neon",
+          "night",
+          "back-light"
+        ],
+        "skin_tones": [
+          "fair",
+          "light",
+          "medium",
+          "tan"
+        ],
+        "styles": [
+          "cool",
+          "elegant"
+        ]
+      },
+      "adjustments": {
+        "exposure": 0.0,
+        "contrast": -3,
+        "highlights": -15,
+        "shadows": 10,
+        "whites": -10,
+        "blacks": 8,
+        "saturation": -10,
+        "vibrance": -5,
+        "temperature": 200,
+        "tint": 15,
+        "sharpness": -8,
+        "noise_reduction": 0,
+        "vignette": -10,
+        "grain": 10
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/hk-retro.cube",
+        "hald_8": "assets/presets/hk-retro_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    },
+    {
+      "preset_id": "moody-gray",
+      "name": {
+        "zh": "高级灰",
+        "en": "Moody Gray"
+      },
+      "style_tags": [
+        "desaturated",
+        "moody",
+        "gray",
+        "minimal",
+        "premium"
+      ],
+      "best_for": {
+        "scene_types": [
+          "street",
+          "urban",
+          "indoor",
+          "industrial"
+        ],
+        "lighting": [
+          "overcast",
+          "soft-light",
+          "side-light"
+        ],
+        "skin_tones": [
+          "all"
+        ],
+        "styles": [
+          "cool",
+          "elegant",
+          "casual"
+        ]
+      },
+      "adjustments": {
+        "exposure": 0.0,
+        "contrast": 3,
+        "highlights": -10,
+        "shadows": 10,
+        "whites": -5,
+        "blacks": 8,
+        "saturation": -30,
+        "vibrance": -15,
+        "temperature": -100,
+        "tint": 0,
+        "sharpness": 5,
+        "noise_reduction": 0,
+        "vignette": -8,
+        "grain": 2
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/moody-gray.cube",
+        "hald_8": "assets/presets/moody-gray_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    },
+    {
+      "preset_id": "hdr-pop",
+      "name": {
+        "zh": "HDR强化",
+        "en": "HDR Pop"
+      },
+      "style_tags": [
+        "vivid",
+        "sharp",
+        "detailed",
+        "punchy",
+        "dynamic"
+      ],
+      "best_for": {
+        "scene_types": [
+          "outdoor-nature",
+          "beach",
+          "landscape",
+          "street"
+        ],
+        "lighting": [
+          "front-light",
+          "golden-hour",
+          "bright-sun"
+        ],
+        "skin_tones": [
+          "all"
+        ],
+        "styles": [
+          "natural",
+          "casual"
+        ]
+      },
+      "adjustments": {
+        "exposure": 0.1,
+        "contrast": 10,
+        "highlights": -20,
+        "shadows": 15,
+        "whites": 5,
+        "blacks": -5,
+        "saturation": 15,
+        "vibrance": 10,
+        "temperature": 100,
+        "tint": 0,
+        "sharpness": 12,
+        "noise_reduction": 0,
+        "vignette": 0,
+        "grain": 0
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/hdr-pop.cube",
+        "hald_8": "assets/presets/hdr-pop_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    },
+    {
+      "preset_id": "clean-white",
+      "name": {
+        "zh": "素颜白",
+        "en": "Clean White"
+      },
+      "style_tags": [
+        "bright",
+        "clean",
+        "airy",
+        "soft",
+        "minimal"
+      ],
+      "best_for": {
+        "scene_types": [
+          "indoor",
+          "indoor-home",
+          "beach",
+          "minimalist"
+        ],
+        "lighting": [
+          "front-light",
+          "soft-light",
+          "bright",
+          "window-light"
+        ],
+        "skin_tones": [
+          "fair",
+          "light"
+        ],
+        "styles": [
+          "fresh",
+          "sweet",
+          "natural"
+        ]
+      },
+      "adjustments": {
+        "exposure": 0.25,
+        "contrast": -10,
+        "highlights": -5,
+        "shadows": 15,
+        "whites": 0,
+        "blacks": -10,
+        "saturation": -10,
+        "vibrance": -5,
+        "temperature": -150,
+        "tint": 3,
+        "sharpness": -2,
+        "noise_reduction": 3,
+        "vignette": 0,
+        "grain": 0
+      },
+      "lut_files": {
+        "cube_33": "assets/presets/clean-white.cube",
+        "hald_8": "assets/presets/clean-white_hald.png"
+      },
+      "metadata": {
+        "author": "posecraft_team",
+        "is_premium": false
+      }
+    }
+  ]
+}

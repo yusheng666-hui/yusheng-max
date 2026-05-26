@@ -1,0 +1,51 @@
+# Flutter
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.venv/
+venv/
+
+# Android
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# iOS
+*.ipa
+Pods/
+
+# Environment
+.env
+*.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+*.bak
+*.tmp
+*~
+.project
+.classpath
+.settings/
+
+# Assets temp
+assets/bug/*
+!assets/bug/.gitkeep

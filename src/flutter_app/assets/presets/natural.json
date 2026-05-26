@@ -1,0 +1,69 @@
+{
+  "preset_id": "natural",
+  "name": {
+    "zh": "自然",
+    "en": "Natural"
+  },
+  "version": 1,
+  "status": "published",
+  "category": "style",
+  "style_tags": [
+    "natural",
+    "clean"
+  ],
+  "lut_files": {
+    "cube_33": "assets/presets/natural.cube",
+    "hald_8": "assets/presets/natural_hald.png"
+  },
+  "adjustments": {
+    "exposure": 0.05,
+    "contrast": 2,
+    "highlights": -5,
+    "shadows": 5,
+    "whites": 0,
+    "blacks": 0,
+    "saturation": 0,
+    "vibrance": 3,
+    "temperature": 0,
+    "tint": 0,
+    "sharpness": 2,
+    "noise_reduction": 0,
+    "vignette": -3,
+    "grain": 0
+  },
+  "best_for": {
+    "scene_types": [
+      "outdoor-nature",
+      "street",
+      "indoor",
+      "beach"
+    ],
+    "lighting": [
+      "front-light",
+      "overcast",
+      "soft-light",
+      "golden-hour"
+    ],
+    "skin_tones": [
+      "fair",
+      "light",
+      "medium",
+      "tan",
+      "dark"
+    ],
+    "styles": [
+      "natural",
+      "casual",
+      "elegant"
+    ]
+  },
+  "preview_image": "assets/presets/natural_preview.jpg",
+  "metadata": {
+    "author": "posecraft_team",
+    "created_at": "2026-05-25T00:00:00Z",
+    "usage_count": 0,
+    "avg_rating": 0.0,
+    "is_premium": false,
+    "price": null
+  }
+}
