@@ -95,6 +95,30 @@ void main() {
   // ── Tests ──────────────────────────────────────────────────────
 
   group('LocalRecommendationEngine.recommend()', () {
+    test('DEBUG: dump internal state', () {
+      // Verify the fake loader works
+      final loader = FakeLocalPoseLoader(sceneMap, allPoses);
+      final directPoses = loader.getPosesForScene('outdoor');
+      if (directPoses.isEmpty) {
+        fail('FakeLoader.getPosesForScene("outdoor") returned empty. '
+            'sceneMap keys: ${sceneMap.keys}, '
+            'outdoor entry: ${sceneMap["outdoor"]?.length} poses, '
+            'loader.isLoaded=${loader.isLoaded}, '
+            'loader.posesByScene.keys=${loader.posesByScene.keys}');
+      }
+
+      final engine = LocalRecommendationEngine(loader);
+      final response = engine.recommend(sceneClass: 'outdoor-nature', topK: 3);
+      if (response.recommendations.isEmpty) {
+        fail('recommend returned empty. '
+            'totalCandidates=${response.totalCandidates}, '
+            'sceneDetected=${response.sceneDetected}, '
+            'isReady=${engine.isReady}, '
+            'directPosesFromLoader=${directPoses.length}');
+      }
+      expect(response.recommendations, isNotEmpty);
+    });
+
     test('returns results for scene with poses', () {
       final engine = _engine();
       final response = engine.recommend(sceneClass: 'outdoor-nature', topK: 3);
