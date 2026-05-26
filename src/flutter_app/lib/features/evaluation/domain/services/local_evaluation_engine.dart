@@ -7,6 +7,7 @@ import 'dart:math';
 import '../../../../shared/models/evaluation.dart';
 import '../../../ar/domain/services/alignment_scorer.dart';
 import '../../../camera/domain/services/lighting_analyzer.dart';
+import '../../../camera/domain/services/expression_detector.dart';
 
 class LocalEvaluationEngine {
   final Random _random = Random(42);
@@ -19,6 +20,7 @@ class LocalEvaluationEngine {
   EvaluationResult evaluate({
     AlignmentResult? alignment,
     LightingAnalysisResult? lighting,
+    ExpressionResult? expression,
     required String sceneClass,
     required String timeOfDay,
   }) {
@@ -104,12 +106,43 @@ class LocalEvaluationEngine {
     ));
 
     // ── Expression (15%) ───────────────────────────────────────
-    // Placeholder — MediaPipe FaceMesh not integrated yet
-    const exprScore = 6.5;
-    dims.add(const DimensionScore(
-      score: 6.5,
+    double exprScore;
+    String exprFeedback;
+    if (expression != null) {
+      switch (expression.expression) {
+        case ExpressionType.laugh:
+          exprScore = 9.5;
+          exprFeedback = '笑容灿烂，非常有感染力';
+          break;
+        case ExpressionType.bigSmile:
+          exprScore = 8.5;
+          exprFeedback = '笑容很棒，很上镜';
+          break;
+        case ExpressionType.slightSmile:
+          exprScore = 7.0;
+          exprFeedback = '微笑自然，可以笑开一点更好';
+          break;
+        case ExpressionType.winking:
+          exprScore = 7.5;
+          exprFeedback = '眨眼抓拍很俏皮';
+          break;
+        case ExpressionType.neutral:
+          exprScore = 5.5;
+          exprFeedback = '表情比较平淡，笑一个会更生动';
+          break;
+        case ExpressionType.eyesClosed:
+          exprScore = 4.0;
+          exprFeedback = '闭眼了，下次注意睁眼';
+          break;
+      }
+    } else {
+      exprScore = 6.0;
+      exprFeedback = '未检测到面部表情';
+    }
+    dims.add(DimensionScore(
+      score: exprScore,
       labelZh: '表情',
-      feedbackZh: '表情检测将在后续版本上线',
+      feedbackZh: exprFeedback,
     ));
 
     // ── Overall score ──────────────────────────────────────────

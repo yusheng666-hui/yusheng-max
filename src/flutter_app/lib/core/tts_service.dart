@@ -7,6 +7,7 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import '../features/ar/domain/services/alignment_scorer.dart';
 import '../features/camera/domain/services/lighting_analyzer.dart';
+import '../features/camera/domain/services/expression_detector.dart';
 import '../shared/models/recommendation.dart';
 
 class TtsService {
@@ -143,6 +144,33 @@ class TtsService {
       }
     } else if (result.quality == LightQualityType.hard) {
       text = '光线比较硬，面部容易有阴影';
+    }
+
+    if (text != null) {
+      await speak(text);
+    }
+  }
+
+  // ── Expression guidance ────────────────────────────────────────
+
+  /// Speak expression hints when the detected expression could be improved.
+  Future<void> speakExpressionGuidance(ExpressionResult result) async {
+    if (_muted || !_initialized) return;
+
+    String? text;
+
+    switch (result.expression) {
+      case ExpressionType.neutral:
+        text = '笑一个，拍照更上镜';
+        break;
+      case ExpressionType.slightSmile:
+        text = '可以笑开一点';
+        break;
+      case ExpressionType.eyesClosed:
+        text = '眼睛睁大一点';
+        break;
+      default:
+        break; // bigSmile, laugh, winking — no guidance needed
     }
 
     if (text != null) {

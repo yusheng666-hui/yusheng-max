@@ -17,6 +17,8 @@ import '../domain/services/pose_detector.dart';
 import '../domain/services/scene_analyzer.dart';
 import '../domain/services/hybrid_scene_analyzer.dart';
 import '../domain/services/lighting_analyzer.dart';
+import '../domain/services/expression_detector.dart';
+import 'widgets/expression_guide_overlay.dart';
 import '../../../core/api_client.dart';
 import '../../../core/connectivity_checker.dart';
 import '../../../core/tts_service.dart';
@@ -71,6 +73,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
     _connectivityChecker?.stop();
     _poseDetector?.dispose();
     _controller?.dispose();
+    ref.read(expressionDetectorProvider).dispose();
     ref.read(ttsServiceProvider).dispose();
     super.dispose();
   }
@@ -99,6 +102,10 @@ class _CameraPageState extends ConsumerState<CameraPage>
     // Initialize TTS
     final tts = ref.read(ttsServiceProvider);
     tts.init();
+
+    // Initialize expression detection
+    final expressionDetector = ref.read(expressionDetectorProvider);
+    expressionDetector.initialize();
   }
 
   /// Initialize the rear camera with image stream for ML processing.
@@ -182,6 +189,14 @@ class _CameraPageState extends ConsumerState<CameraPage>
       if (result != null) {
         ref.read(lightingAnalysisResultProvider.notifier).state = result;
       }
+
+      // Expression detection — piggyback on lighting interval (~1 fps)
+      final expressionDetector = ref.read(expressionDetectorProvider);
+      expressionDetector.processFrame(image).then((expr) {
+        if (expr != null) {
+          ref.read(expressionResultProvider.notifier).state = expr;
+        }
+      });
     }
   }
 
@@ -351,6 +366,9 @@ class _CameraPageState extends ConsumerState<CameraPage>
         if (recs.isNotEmpty) recommendedPresetId = recs.first.presetId;
       }
 
+      // Snapshot current expression
+      final expression = ref.read(expressionResultProvider);
+
       // Generate local evaluation
       final evalEngine = ref.read(localEvaluationEngineProvider);
       final result = evalEngine.evaluate(
@@ -358,6 +376,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
         lighting: lighting,
         sceneClass: sceneClass,
         timeOfDay: timeOfDay,
+        expression: expression,
       );
 
       if (!mounted) return;
@@ -485,6 +504,14 @@ class _CameraPageState extends ConsumerState<CameraPage>
       }
     });
 
+    // TTS: speak expression hints when expression type changes
+    ref.listen(expressionResultProvider, (prev, next) {
+      if (next != null &&
+          (prev == null || prev.expression != next.expression)) {
+        ref.read(ttsServiceProvider).speakExpressionGuidance(next);
+      }
+    });
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -495,6 +522,9 @@ class _CameraPageState extends ConsumerState<CameraPage>
 
           // AR skeleton overlay
           const ArOverlay(),
+
+          // Expression guide chip
+          const ExpressionGuideOverlay(),
 
           // Wardrobe + prop styling card (left side)
           const Positioned(

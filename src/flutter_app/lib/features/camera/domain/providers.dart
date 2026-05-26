@@ -12,6 +12,7 @@ import '../domain/services/scene_analyzer.dart';
 import '../domain/services/hybrid_scene_analyzer.dart';
 import '../domain/services/camera_params_service.dart';
 import '../domain/services/lighting_analyzer.dart';
+import '../domain/services/expression_detector.dart';
 import '../../ar/domain/services/alignment_scorer.dart';
 import '../../recommendation/domain/services/recommendation_service.dart';
 import '../../recommendation/domain/services/local_pose_loader.dart';
@@ -265,6 +266,16 @@ final lightingAnalyzerProvider = Provider<LightingAnalyzer>((ref) {
 
 /// Latest lighting analysis result from camera frames.
 final lightingAnalysisResultProvider = StateProvider<LightingAnalysisResult?>((ref) => null);
+
+// ── Expression Detection ─────────────────────────────────────────
+
+/// Expression detector wrapping ML Kit Face Detection.
+final expressionDetectorProvider = Provider<ExpressionDetector>((ref) {
+  return ExpressionDetector();
+});
+
+/// Latest detected expression result from camera frames.
+final expressionResultProvider = StateProvider<ExpressionResult?>((ref) => null);
 
 /// Current skeleton alignment between user pose and active recommendation.
 final alignmentResultProvider = Provider<AlignmentResult?>((ref) {
