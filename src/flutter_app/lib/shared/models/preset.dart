@@ -165,7 +165,7 @@ class Preset {
   /// Cached Hald CLUT image for GPU/CPU application.
   ui.Image? haldImage;
 
-  const Preset({
+  Preset({
     required this.presetId,
     required this.name,
     this.version = 1,

@@ -60,12 +60,12 @@ class _PoseDetailPageState extends ConsumerState<PoseDetailPage> {
     final modelTips = _extractZh(guidance, 'model_tips') ?? '';
     final photoTips = (_extractNestedZh(guidance, 'photographer_tips'));
     final steps = (guidance['step_by_step'] as List<dynamic>?)
-            ?.map((s) => s is Map ? _extractZh(s, null) ?? '' : s.toString())
+            ?.map((s) => s is Map<String, dynamic> ? _extractZh(s, null) ?? '' : s.toString())
             .where((s) => s.isNotEmpty)
             .toList() ??
         [];
     final mistakes = (guidance['common_mistakes'] as List<dynamic>?)
-            ?.map((m) => m is Map ? _extractZh(m, null) ?? '' : m.toString())
+            ?.map((m) => m is Map<String, dynamic> ? _extractZh(m, null) ?? '' : m.toString())
             .where((s) => s.isNotEmpty)
             .toList() ??
         [];
@@ -376,7 +376,7 @@ class _PoseDetailPageState extends ConsumerState<PoseDetailPage> {
 
   // ── Helpers ──
 
-  String? _extractZh(Map<String, dynamic> map, String key) {
+  String? _extractZh(Map<String, dynamic> map, String? key) {
     final target = key != null ? map[key] as Map<String, dynamic>? : map;
     if (target == null) return null;
     return target['zh'] as String? ?? target['zh_CN'] as String?;

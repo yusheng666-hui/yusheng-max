@@ -45,18 +45,18 @@ class DiscoveryPage extends ConsumerWidget {
                 }
               },
               style: ButtonStyle(
-                textStyle: WidgetStateProperty.all(
+                textStyle: MaterialStateProperty.all(
                     const TextStyle(fontSize: 12)),
                 backgroundColor:
-                    WidgetStateProperty.resolveWith((states) {
-                  if (states.contains(WidgetState.selected)) {
+                    MaterialStateProperty.resolveWith((states) {
+                  if (states.contains(MaterialState.selected)) {
                     return Colors.amber.withOpacity(0.15);
                   }
                   return Colors.transparent;
                 }),
                 foregroundColor:
-                    WidgetStateProperty.resolveWith((states) {
-                  if (states.contains(WidgetState.selected)) {
+                    MaterialStateProperty.resolveWith((states) {
+                  if (states.contains(MaterialState.selected)) {
                     return Colors.amber;
                   }
                   return Colors.white38;

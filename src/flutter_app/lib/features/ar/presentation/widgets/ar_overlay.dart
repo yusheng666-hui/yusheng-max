@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../camera/domain/providers.dart';
 import '../../../camera/domain/services/pose_detector.dart';
-import '../../../shared/models/recommendation.dart';
-import '../../../shared/models/pose.dart';
+import '../../../../shared/models/recommendation.dart';
+import '../../../../shared/models/pose.dart';
 import '../../../pose_clone/domain/providers.dart';
 
 /// AR skeleton overlay rendered on top of the camera preview.
@@ -54,21 +54,21 @@ class ArOverlay extends ConsumerWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.magentaAccent.withOpacity(0.2),
+                  color: Colors.pinkAccent.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.magentaAccent.withOpacity(0.5)),
+                  border: Border.all(color: Colors.pinkAccent.withOpacity(0.5)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
-                    Icon(Icons.content_copy, color: Colors.magentaAccent, size: 14),
+                    Icon(Icons.content_copy, color: Colors.pinkAccent, size: 14),
                     SizedBox(width: 4),
                     Text(
                       '克隆模式',
-                      style: TextStyle(color: Colors.magentaAccent, fontSize: 11),
+                      style: TextStyle(color: Colors.pinkAccent, fontSize: 11),
                     ),
                     SizedBox(width: 4),
-                    Icon(Icons.close, color: Colors.magentaAccent, size: 14),
+                    Icon(Icons.close, color: Colors.pinkAccent, size: 14),
                   ],
                 ),
               ),
@@ -110,7 +110,7 @@ const _poseConnections = [
 /// Per-person skeleton colors (up to 5 people).
 const _userColors = [
   Colors.cyanAccent,
-  Colors.magentaAccent,
+  Colors.pinkAccent,
   Colors.yellowAccent,
   Colors.orangeAccent,
   Colors.limeAccent,
@@ -133,8 +133,8 @@ class _SkeletonOverlayPainter extends CustomPainter {
     if (cloneTarget != null && cloneTarget!.keypoints.isNotEmpty) {
       _drawSkeleton(
         canvas, size, cloneTarget!.keypoints,
-        Colors.magentaAccent.withOpacity(0.9),
-        Colors.magentaAccent.withOpacity(0.25),
+        Colors.pinkAccent.withOpacity(0.9),
+        Colors.pinkAccent.withOpacity(0.25),
         3.0,
       );
     } else if (targetPose != null && targetPose!.skeleton.keypoints.isNotEmpty) {

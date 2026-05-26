@@ -6,7 +6,7 @@ import 'package:camera/camera.dart' as cam;
 /// Uses the camera package's built-in preview widget with proper
 /// aspect ratio handling to fill the full screen.
 class CameraPreview extends StatelessWidget {
-  final CameraController controller;
+  final cam.CameraController controller;
 
   const CameraPreview({super.key, required this.controller});
 

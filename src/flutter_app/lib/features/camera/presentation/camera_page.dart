@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:camera/camera.dart';
+import 'package:camera/camera.dart' hide CameraPreview;
 import 'package:uuid/uuid.dart';
 
 import 'widgets/camera_preview.dart';

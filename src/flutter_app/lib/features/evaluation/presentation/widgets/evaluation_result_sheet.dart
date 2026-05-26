@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../shared/models/evaluation.dart';
+import '../../../../shared/models/evaluation.dart';
 import '../../domain/providers.dart';
 import '../../domain/services/preset_recommendation_service.dart';
 

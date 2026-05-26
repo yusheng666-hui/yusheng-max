@@ -7,7 +7,7 @@
 import 'dart:math';
 import 'local_pose_loader.dart';
 import 'recommendation_service.dart';
-import '../../../shared/models/recommendation.dart';
+import '../../../../shared/models/recommendation.dart';
 
 /// Scene class to internal key mapping.
 /// Maps all TFLite 20-class labels and taxonomy poseDbKeys to the 6 internal

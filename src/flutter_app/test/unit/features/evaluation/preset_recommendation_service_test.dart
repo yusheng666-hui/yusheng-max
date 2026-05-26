@@ -3,6 +3,7 @@ import 'package:pose_craft/features/evaluation/domain/services/preset_recommenda
 import 'package:pose_craft/features/evaluation/domain/services/preset_loader.dart';
 import 'package:pose_craft/features/camera/domain/services/lighting_analyzer.dart';
 import 'package:pose_craft/shared/models/preset.dart';
+import 'package:pose_craft/shared/models/scene_features.dart';
 
 /// Fake loader that returns a controlled list of presets instead of reading assets.
 class FakePresetLoader extends PresetLoader {

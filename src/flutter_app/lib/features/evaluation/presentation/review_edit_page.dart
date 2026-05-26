@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/providers.dart';
 import '../domain/services/gpu_lut_engine.dart';
 import '../domain/services/preset_loader.dart';
-import '../../shared/models/preset.dart';
+import '../../../shared/models/preset.dart';
 import 'widgets/preset_panel.dart';
 import 'widgets/adjustment_sliders.dart';
 

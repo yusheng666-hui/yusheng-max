@@ -3,7 +3,6 @@ import 'package:pose_craft/features/evaluation/domain/services/local_evaluation_
 import 'package:pose_craft/features/ar/domain/services/alignment_scorer.dart';
 import 'package:pose_craft/features/camera/domain/services/lighting_analyzer.dart';
 import 'package:pose_craft/features/camera/domain/services/expression_detector.dart';
-import 'package:pose_craft/shared/models/evaluation.dart';
 import 'package:pose_craft/shared/models/scene_features.dart';
 
 void main() {

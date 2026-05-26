@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import '../../domain/services/preset_loader.dart';
-import '../../../shared/models/preset.dart';
+import '../../../../shared/models/preset.dart';
 
 class PresetPanel extends StatelessWidget {
   final List<Preset> presets;

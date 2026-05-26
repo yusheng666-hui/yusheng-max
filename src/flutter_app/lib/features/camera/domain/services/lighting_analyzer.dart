@@ -11,7 +11,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
-import '../../../shared/models/scene_features.dart';
+import '../../../../shared/models/scene_features.dart';
 
 enum LightQualityType {
   /// Harsh light — strong shadows, high contrast (midday sun, direct flash)

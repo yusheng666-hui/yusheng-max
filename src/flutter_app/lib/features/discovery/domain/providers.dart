@@ -60,10 +60,10 @@ final userPositionProvider =
     StateProvider<({double lat, double lon})?>((ref) => null);
 
 /// Error message if location fails.
-final locationErrorProvider = StateProvider<String?>(() => null);
+final locationErrorProvider = StateProvider<String?>((ref) => null);
 
 /// Fetch GPS position and update state.
-Future<void> fetchUserLocation(Ref ref) async {
+Future<void> fetchUserLocation(WidgetRef ref) async {
   ref.read(isLocatingProvider.notifier).state = true;
   ref.read(locationErrorProvider.notifier).state = null;
 
@@ -85,10 +85,8 @@ Future<void> fetchUserLocation(Ref ref) async {
     }
 
     final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        timeLimit: Duration(seconds: 10),
-      ),
+      desiredAccuracy: LocationAccuracy.high,
+      timeLimit: const Duration(seconds: 10),
     );
 
     ref.read(userPositionProvider.notifier).state = (

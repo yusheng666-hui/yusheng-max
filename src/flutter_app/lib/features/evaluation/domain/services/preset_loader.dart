@@ -5,7 +5,7 @@
 
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
-import '../../../shared/models/preset.dart';
+import '../../../../shared/models/preset.dart';
 
 class PresetLoader {
   PresetBundle? _bundle;

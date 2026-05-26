@@ -74,8 +74,7 @@ class TFLiteSceneClassifier {
       _interpreter = await Interpreter.fromAsset(
         MlModels.sceneClassifier,
         options: InterpreterOptions()
-          ..threads = 4
-          ..useXNNPACK = true,
+          ..threads = 4,
       );
       _interpreter!.allocateTensors();
       _isLoaded = true;
@@ -134,13 +133,10 @@ class TFLiteSceneClassifier {
     int width,
     int height,
     int modelSize,
-    int inputType,
+    TensorType inputType,
   ) {
     // Determine if model expects [-1,1] or [0,1] normalization
-    final quantParams = _interpreter!.getInputTensor(0).quantParams;
-    final scale = quantParams?.scale ?? 0.0;
-    final zeroPoint = quantParams?.zeroPoint ?? 0;
-    final isQuantized = scale != 0.0;
+    final isQuantized = inputType == TensorType.uint8;
 
     final input = Float32List(modelSize * modelSize * 3);
 
@@ -166,9 +162,9 @@ class TFLiteSceneClassifier {
           final b = bytes[srcIdx + 2];
 
           if (isQuantized) {
-            input[idx] = ((r.toDouble() / 255.0) / scale + zeroPoint).roundToDouble();
-            input[idx + 1] = ((g.toDouble() / 255.0) / scale + zeroPoint).roundToDouble();
-            input[idx + 2] = ((b.toDouble() / 255.0) / scale + zeroPoint).roundToDouble();
+            input[idx] = r.toDouble();
+            input[idx + 1] = g.toDouble();
+            input[idx + 2] = b.toDouble();
           } else {
             // Float model: normalize to [-1, 1] (standard MobileNet preprocessing)
             input[idx] = (r.toDouble() / 127.5) - 1.0;

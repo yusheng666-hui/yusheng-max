@@ -25,7 +25,7 @@ const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 
 void main() {
     // Normalize canvas coordinate to [0,1] UV
-    vec2 uv = FlutterFragCoord().xy / uInputSize;
+    vec2 uv = gl_FragCoord.xy / uInputSize;
 
     // Sample input image
     vec3 color = texture(inputImage, uv).rgb;

@@ -66,8 +66,7 @@ class TFLiteDepthEstimator {
       _interpreter = await Interpreter.fromAsset(
         MlModels.depthEstimation,
         options: InterpreterOptions()
-          ..threads = 4
-          ..useXNNPACK = true,
+          ..threads = 4,
       );
       _interpreter!.allocateTensors();
       _isLoaded = true;
