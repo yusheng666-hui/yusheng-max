@@ -10,8 +10,22 @@
 
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:camera/camera.dart';
 import '../../../../shared/models/scene_features.dart';
+
+/// Luminance data extracted from a camera frame's Y-plane.
+class FrameLuminanceData {
+  final Uint8List yPlaneBytes;
+  final int width;
+  final int height;
+  final int bytesPerRow;
+
+  const FrameLuminanceData({
+    required this.yPlaneBytes,
+    required this.width,
+    required this.height,
+    required this.bytesPerRow,
+  });
+}
 
 enum LightQualityType {
   /// Harsh light — strong shadows, high contrast (midday sun, direct flash)
@@ -77,15 +91,14 @@ class LightingAnalyzer {
   ///
   /// Returns null if the frame data is unusable.
   LightingAnalysisResult? analyzeFrame(
-    CameraImage image, {
+    FrameLuminanceData frame, {
     required String sceneClass,
     required String timeOfDay,
   }) {
-    final yPlane = image.planes[0];
-    final width = image.width;
-    final height = image.height;
-    final bytes = yPlane.bytes;
-    final bytesPerRow = yPlane.bytesPerRow;
+    final width = frame.width;
+    final height = frame.height;
+    final bytes = frame.yPlaneBytes;
+    final bytesPerRow = frame.bytesPerRow;
 
     if (bytes.isEmpty || width == 0 || height == 0) return null;
 

@@ -53,7 +53,7 @@ void main() {
       );
 
       expect(result.overallScore, greaterThan(0.95));
-      expect(result.matchedKeypoints, 33);
+      expect(result.matchedKeypoints, 17); // 17 keypoints with visibility >= 0.3
       expect(result.hints, isEmpty);
     });
 

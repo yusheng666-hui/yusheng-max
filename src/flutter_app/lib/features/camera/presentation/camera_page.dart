@@ -191,8 +191,14 @@ class _CameraPageState extends ConsumerState<CameraPage>
       final timeOfDay = scene?.timeOfDay ?? _timeOfDayFromHour(DateTime.now().hour);
 
       final analyzer = ref.read(lightingAnalyzerProvider);
+      final frame = FrameLuminanceData(
+        yPlaneBytes: image.planes[0].bytes,
+        width: image.width,
+        height: image.height,
+        bytesPerRow: image.planes[0].bytesPerRow,
+      );
       final result = analyzer.analyzeFrame(
-        image,
+        frame,
         sceneClass: sceneClass,
         timeOfDay: timeOfDay,
       );

@@ -6,6 +6,7 @@ import '../../../camera/domain/services/pose_detector.dart';
 import '../../../../shared/models/recommendation.dart';
 import '../../../../shared/models/pose.dart';
 import '../../../pose_clone/domain/providers.dart';
+import '../../domain/services/alignment_scorer.dart';
 
 /// AR skeleton overlay rendered on top of the camera preview.
 ///

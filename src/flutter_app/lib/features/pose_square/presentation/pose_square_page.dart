@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/providers.dart';
+import '../../camera/domain/providers.dart';
 import 'widgets/pose_grid_card.dart';
 import 'pose_detail_page.dart';
 import '../../pose_clone/presentation/clone_page.dart';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../camera/domain/providers.dart';
+import '../../../../shared/models/recommendation.dart';
 import '../../domain/services/recommendation_service.dart';
 import '../../../../core/user_preference_store.dart';
 

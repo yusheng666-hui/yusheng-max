@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/providers.dart';
 import '../../recommendation/domain/services/local_pose_loader.dart';
+import '../../camera/domain/providers.dart';
 
 class PoseDetailPage extends ConsumerStatefulWidget {
   final String poseId;
