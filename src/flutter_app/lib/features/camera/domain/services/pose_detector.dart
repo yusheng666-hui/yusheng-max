@@ -94,10 +94,7 @@ class PoseDetector {
     if (_isInitialized) return;
 
     _detector = mlkit.PoseDetector(
-      options: mlkit.PoseDetectorOptions(
-        poseDetectionMode: config.mode,
-        maxPoses: config.maxPoses,
-      ),
+      options: mlkit.PoseDetectorOptions(),
     );
     _isInitialized = true;
   }

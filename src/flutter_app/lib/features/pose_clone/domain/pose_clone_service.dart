@@ -41,9 +41,7 @@ class PoseCloneService {
   Future<void> initialize() async {
     if (_initialized) return;
     _detector = mlkit.PoseDetector(
-      options: mlkit.PoseDetectorOptions(
-        poseDetectionMode: mlkit.PoseDetectionMode.stream,
-      ),
+      options: mlkit.PoseDetectorOptions(),
     );
     _initialized = true;
   }

@@ -79,13 +79,12 @@ void main() {
                              * ((bi == 0) ? (1.0 - db) : db);
 
                 // Hald layout: x = g*8 + b, y = r
-                // Use texelFetch with integer coordinates to avoid filtering bleed
-                ivec2 haldCoord = ivec2(
-                    int(g) * 8 + int(b),
-                    int(r)
+                // Use texture() with normalized UV (texelFetch not supported by Impeller)
+                vec2 haldUv = vec2(
+                    (g * 8.0 + b + 0.5) / 64.0,
+                    (r + 0.5) / 64.0
                 );
-                haldCoord = clamp(haldCoord, ivec2(0), ivec2(63));
-                vec3 clutSample = texelFetch(haldClut, haldCoord, 0).rgb;
+                vec3 clutSample = texture(haldClut, haldUv).rgb;
                 result += clutSample * weight;
             }
         }
