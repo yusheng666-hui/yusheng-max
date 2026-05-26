@@ -3,6 +3,7 @@
 /// Classifies expressions from `smilingProbability`, `leftEyeOpenProbability`,
 /// and `rightEyeOpenProbability` into 6 categories, with Chinese guidance text.
 
+import 'dart:ui' show Size;
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 

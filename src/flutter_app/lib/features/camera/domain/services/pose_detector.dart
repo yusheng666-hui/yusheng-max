@@ -4,7 +4,8 @@
 /// 33 MediaPipe-compatible keypoints. Supports multi-person detection (up to 5 poses).
 
 import 'dart:async';
-import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'dart:ui' show Size;
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart' as mlkit;
 import 'package:camera/camera.dart';
 
 /// Person-count mode for filtering recommendations.
@@ -17,8 +18,8 @@ class DetectedPose {
 
   DetectedPose({required this.keypoints, required this.timestamp});
 
-  /// Convert from ML Kit [Pose] to domain model.
-  factory DetectedPose.fromMlKit(Pose pose) {
+  /// Convert from ML Kit [mlkit.Pose] to domain model.
+  factory DetectedPose.fromMlKit(mlkit.Pose pose) {
     return DetectedPose(
       keypoints: pose.landmarks.values
           .map((l) => DetectedKeypoint(
@@ -57,11 +58,11 @@ class DetectedKeypoint {
 
 /// Configuration for the pose detector.
 class PoseDetectorConfig {
-  final PoseDetectionMode mode;
+  final mlkit.PoseDetectionMode mode;
   final int maxPoses;
 
   const PoseDetectorConfig({
-    this.mode = PoseDetectionMode.stream,
+    this.mode = mlkit.PoseDetectionMode.stream,
     this.maxPoses = 5,
   });
 }
@@ -76,7 +77,7 @@ class PoseDetectorConfig {
 /// detector.processFrame(cameraImage);
 /// ```
 class PoseDetector {
-  PoseDetector? _detector;
+  mlkit.PoseDetector? _detector;
   final PoseDetectorConfig config;
   bool _isInitialized = false;
   bool _isProcessing = false;
@@ -92,9 +93,11 @@ class PoseDetector {
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    _detector = PoseDetector(
-      mode: config.mode,
-      maxPoses: config.maxPoses,
+    _detector = mlkit.PoseDetector(
+      options: mlkit.PoseDetectorOptions(
+        poseDetectionMode: config.mode,
+        maxPoses: config.maxPoses,
+      ),
     );
     _isInitialized = true;
   }
@@ -127,18 +130,18 @@ class PoseDetector {
   }
 
   /// Convert camera image to ML Kit InputImage.
-  InputImage? _cameraImageToInputImage(CameraImage image) {
-    final rotation = InputImageRotationValue.fromRawValue(0) ??
-        InputImageRotation.rotation0deg;
+  mlkit.InputImage? _cameraImageToInputImage(CameraImage image) {
+    final rotation = mlkit.InputImageRotationValue.fromRawValue(0) ??
+        mlkit.InputImageRotation.rotation0deg;
 
-    final format = InputImageFormatValue.fromRawValue(image.format.raw) ??
-        InputImageFormat.nv21;
+    final format = mlkit.InputImageFormatValue.fromRawValue(image.format.raw) ??
+        mlkit.InputImageFormat.nv21;
 
     final plane = image.planes.first;
 
-    return InputImage.fromBytes(
+    return mlkit.InputImage.fromBytes(
       bytes: plane.bytes,
-      metadata: InputImageMetadata(
+      metadata: mlkit.InputImageMetadata(
         size: Size(image.width.toDouble(), image.height.toDouble()),
         rotation: rotation,
         format: format,

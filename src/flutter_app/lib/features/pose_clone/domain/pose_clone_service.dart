@@ -5,7 +5,7 @@
 
 import 'dart:typed_data';
 import 'dart:io';
-import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart' as mlkit;
 import '../../../shared/models/pose.dart';
 
 /// Mapping from ML Kit PoseLandmarkType index to human-readable keypoint name.
@@ -35,12 +35,16 @@ class CloneResult {
 }
 
 class PoseCloneService {
-  PoseDetector? _detector;
+  mlkit.PoseDetector? _detector;
   bool _initialized = false;
 
   Future<void> initialize() async {
     if (_initialized) return;
-    _detector = PoseDetector(mode: PoseDetectionMode.singleImage);
+    _detector = mlkit.PoseDetector(
+      options: mlkit.PoseDetectorOptions(
+        poseDetectionMode: mlkit.PoseDetectionMode.stream,
+      ),
+    );
     _initialized = true;
   }
 
@@ -49,7 +53,7 @@ class PoseCloneService {
     if (!_initialized) await initialize();
 
     try {
-      final inputImage = InputImage.fromFilePath(filePath);
+      final inputImage = mlkit.InputImage.fromFilePath(filePath);
       final poses = await _detector!.processImage(inputImage);
 
       if (poses.isEmpty) return null;

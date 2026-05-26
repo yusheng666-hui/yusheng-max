@@ -85,8 +85,8 @@ void main() {
                     int(r)
                 );
                 haldCoord = clamp(haldCoord, ivec2(0), ivec2(63));
-                vec3 sample = texelFetch(haldClut, haldCoord, 0).rgb;
-                result += sample * weight;
+                vec3 clutSample = texelFetch(haldClut, haldCoord, 0).rgb;
+                result += clutSample * weight;
             }
         }
     }

@@ -29,13 +29,20 @@
 
 | 路径 | 用途 | 规则 |
 |------|------|------|
+| `.github/workflows/` | CI/CD：PR 检查 + main 构建发布 | `pr-checks.yml` + `main.yml` |
+| `.pre-commit-config.yaml` | Git pre-commit hooks（Black/Ruff/mypy/dart） | 提交前自动检查 |
+| `Makefile` | 统一构建入口（setup/format/lint/test/build） | 顶层 `make <target>` |
 | `docs/` | 产品文档：PRD、架构、姿势知识库、决策记录 | 所有 `.md` 文档统一放这里 |
 | `assets/design/` | 设计素材：效果图、UI 参考、AR 交互原型 | 仅设计相关 |
 | `assets/bug/` | 测试报错截图、Bug 复现 | 按日期或 Bug ID 命名 |
 | `assets/reference/` | 参考图、竞品截图、灵感收集 | 非直接产出素材 |
 | `notes/` | 学习笔记：踩坑记录、技术方案、环境备忘 | 逐条标日期 |
 | `src/flutter_app/` | Flutter 客户端代码 | 所有 Flutter 代码 |
+| `src/flutter_app/test/` | Flutter 单元测试（5 文件，35+ 用例） | 按 feature 组织 |
+| `src/flutter_app/analysis_options.yaml` | Dart lint 规则配置 | flutter_lints |
 | `src/backend/` | Python 后端代码 | 所有 Python 代码 |
+| `src/backend/tests/` | Python 单元测试（pytest + conftest） | 含 fixtures |
+| `src/backend/pyproject.toml` | Python lint 配置（Black/Ruff/mypy） | 行宽 100 |
 
 ---
 
@@ -110,3 +117,6 @@
 - 修改 `src/backend/` 时参考 `docs/architecture.md` 第四节的 API 设计。
 - 涉及姿势数据时参考 `docs/pose-taxonomy.md` 的 Schema 定义。
 - **不要硬编码** `assets/` 或 `notes/` 中的文件路径到代码逻辑中。
+- 提交前运行 `make lint` 和 `make test` 确保代码质量通过。
+- CI/CD 通过 GitHub Actions 自动运行，`main.yml` 含 APK 构建 artifact 上传。
+- 测试文件遵循现有模式：Flutter 测试放 `src/flutter_app/test/unit/features/<module>/`，Python 测试放 `src/backend/tests/`。

@@ -17,10 +17,18 @@ PoseCraft 是一款 Android 智能拍照助手 APP。当你面对一个拍照场
 ## 项目结构
 
 ```
+├── .github/workflows/       # CI/CD（PR 检查 + 主分支构建）
+│   ├── pr-checks.yml        # PR: flutter analyze / test / python lint / pytest
+│   └── main.yml             # Push: 同上 + build APK artifact
+├── .pre-commit-config.yaml  # Git pre-commit hooks（Black / Ruff / mypy / dart）
+├── Makefile                 # 统一构建入口（setup / format / lint / test / build-apk）
 ├── docs/
 │   ├── proposal.md          # 产品需求文档（功能全景、MVP 分期、竞品分析）
 │   ├── architecture.md      # 技术架构详设（端云分工、API 设计、部署方案）
-│   └── pose-taxonomy.md     # 姿势知识库设计（分类体系、数据结构、数据管线）
+│   ├── pose-taxonomy.md     # 姿势知识库设计（分类体系、数据结构、数据管线）
+│   ├── camera-params.md     # 相机参数知识库设计
+│   ├── preset-engine.md     # 后期预设引擎设计
+│   └── styling-guide.md     # 服装道具搭配知识库设计
 ├── assets/
 │   ├── design/              # 设计素材（效果图、UI 参考、AR 原型）
 │   ├── bug/                 # 测试报错截图
@@ -29,16 +37,25 @@ PoseCraft 是一款 Android 智能拍照助手 APP。当你面对一个拍照场
 ├── src/
 │   ├── flutter_app/         # Flutter 客户端
 │   │   ├── lib/
-│   │   │   ├── features/    # 功能模块（camera / ar / recommendation / evaluation / profile）
+│   │   │   ├── features/    # 功能模块（camera / ar / recommendation / evaluation / pose_square / discovery / pose_clone / video_guide / profile）
 │   │   │   ├── shared/      # 共享数据模型与组件
 │   │   │   └── core/        # 基础设施（网络 / 存储 / TTS / ML 引擎）
-│   │   └── assets/          # TFLite 模型、本地姿势库、图标字体
+│   │   ├── test/            # 单元测试（alignment_scorer / lighting_analyzer / evaluation_engine / preset_service / recommendation_engine）
+│   │   ├── shaders/         # GPU Fragment Shader（Hald CLUT）
+│   │   ├── assets/          # TFLite 模型、本地姿势库、预设、POI 数据
+│   │   ├── analysis_options.yaml  # Dart lint 配置
+│   │   └── pubspec.yaml
 │   └── backend/             # Python FastAPI 后端
 │       ├── app/
-│       │   ├── api/v1/      # REST API 路由
+│       │   ├── api/v1/      # REST API 路由（19 端点）
 │       │   ├── domain/      # 领域服务（推荐引擎/场景分析/用户画像）
-│       │   └── infrastructure/  # 数据库 / LLM / 缓存 / 存储
-│       └── workers/         # Celery 异步任务
+│       │   ├── models/      # SQLAlchemy ORM 模型
+│       │   ├── schemas/     # Pydantic 请求/响应 Schema
+│       │   ├── db/          # 数据库会话管理
+│       │   └── infrastructure/  # LLM 路由
+│       ├── tests/           # pytest 测试（test_engine / test_evaluation / conftest）
+│       ├── pyproject.toml   # Python lint 配置（Black / Ruff / mypy）
+│       └── requirements.txt
 ├── AGENTS.md                # AI 开发助手使用说明
 └── README.md                # 本文件
 ```
@@ -67,6 +84,13 @@ PoseCraft 是一款 Android 智能拍照助手 APP。当你面对一个拍照场
 - Python 3.12
 - Docker + Docker Compose
 
+### 一键安装
+
+```bash
+make setup-flutter    # flutter pub get + build_runner
+make setup-python     # pip install + pre-commit install
+```
+
 ### Flutter 客户端
 
 ```bash
@@ -85,14 +109,23 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
+### 代码质量
+
+```bash
+make format           # Black + Ruff + dart format
+make lint             # Ruff + mypy + dart analyze
+make test             # flutter test + pytest
+make build-apk        # Flutter APK 构建
+```
+
 ---
 
 ## MVP 进度
 
 - [x] **Phase 0 — 产品定义**：需求文档、架构设计、姿势知识库设计、项目骨架
-- [ ] **Phase 1 — 姿势推荐内核**：5 场景 100 姿势、基础 AR 叠加、端云混合推理
-- [x] **Phase 2 — 全场景 + 全人群**：300 姿势库、AR 对齐评分、相机参数指导、服装道具推荐、摄影师模式、GPU LUT 预设、TTS 语音引导、光线全分析、表情检测、拍后评估
-- [ ] **Phase 3 — 社区 + 商业化**：姿势广场、POI 数据库、姿势克隆、Pro 订阅
+- [x] **Phase 1 — 姿势推荐内核**：5 场景 100 姿势、基础 AR 叠加、端云混合推理
+- [x] **Phase 2 — 全场景 + 全人群**：500 姿势库、AR 对齐评分、相机参数指导、服装道具推荐、摄影师模式、GPU LUT 预设、TTS 语音引导、光线全分析、表情检测、拍后评估、127 场景分类、多人姿势、个性化推荐、后期调色建议、云端后端 19 端点
+- [x] **Phase 3 — 社区 + 商业化**：姿势广场（浏览/收藏/投票）、POI 景点数据库（52 个全国景点+GPS 附近搜索）、姿势克隆（照片→骨骼→AR 复刻）、短视频运镜指导（30+ 手法 9 分类）、地图发现
 
 ---
 

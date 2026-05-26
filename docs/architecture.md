@@ -179,7 +179,7 @@
 
 ## 三、Flutter 端详细设计
 
-### 3.1 项目结构（实际代码，2026-05-25）
+### 3.1 项目结构（实际代码，2026-05-26）
 
 ```
 src/flutter_app/
@@ -304,6 +304,18 @@ src/flutter_app/
 │           ├── photo_spot.dart                 # PhotoSpot (景点机位，Haversine距离)
 │           └── user_profile.dart               # UserProfile / StylePreferences
 │
+├── test/                                       # 单元测试
+│   └── unit/features/
+│       ├── ar/
+│       │   └── alignment_scorer_test.dart      # 对齐评分测试（7 用例）
+│       ├── camera/
+│       │   └── lighting_analyzer_test.dart     # 光线分析测试（FakeCameraImage）
+│       ├── evaluation/
+│       │   ├── local_evaluation_engine_test.dart    # 四维评分引擎测试（8 用例）
+│       │   └── preset_recommendation_service_test.dart # 预设推荐测试（FakePresetLoader）
+│       └── recommendation/
+│           └── local_recommendation_engine_test.dart # 离线推荐引擎测试（mockito）
+│
 ├── shaders/
 │   └── hald_clut.frag                          # GPU Hald CLUT fragment shader
 │
@@ -316,7 +328,7 @@ src/flutter_app/
 │   └── fonts/
 │
 ├── pubspec.yaml
-└── analysis_options.yaml
+└── analysis_options.yaml                       # Dart lint 规则配置
 ```
 
 ### 3.2 已实现的 Provider 树（实际代码）
@@ -471,7 +483,14 @@ src/backend/
 │       ├── user.py                # UserCreate, UserPreferences, UserOut
 │       └── pose.py                # PoseListResponse, PoseDetailOut, PoseSummaryOut
 │
+├── tests/                         # pytest 测试
+│   ├── __init__.py
+│   ├── conftest.py                # 共享 fixtures（sample_poses 等）
+│   ├── test_engine.py             # 推荐引擎测试（7 用例）
+│   └── test_evaluation.py         # 评估函数测试（6 用例）
+│
 ├── data/                          # 本地 JSON 数据（Phase 1 文件存储）
+├── pyproject.toml                 # Black / Ruff / mypy 配置
 ├── requirements.txt
 ├── Dockerfile
 └── docker-compose.yml             # PostgreSQL + Milvus + Redis + MinIO + etcd
@@ -676,6 +695,7 @@ Collection: pose_vectors
 
 ## 八、后续待细化
 
+- [x] CI/CD 流水线设计 — 已完成（GitHub Actions: PR checks + main build, pre-commit hooks, Makefile）
 - [ ] 端侧模型的具体训练计划和数据集需求
 - [ ] ARCore 在主流国产手机上的兼容性测试清单
 - [ ] 云端推理成本预估（按 Qwen-VL API 定价 × 预估调用量）
@@ -683,14 +703,13 @@ Collection: pose_vectors
 - [ ] 服装/道具知识库种子数据采集（6 场景 × 5 道具）
 - [ ] 10 个基础 LUT 的制作与调校
 - [ ] 安全审计清单（数据加密、传输安全、存储安全）
-- [ ] CI/CD 流水线设计
 - [ ] Firebase/Google Play 上架准备清单
 
 ---
 
 ## 九、已知问题 (Known Issues)
 
-> ~~以下问题在 2026-05-26 Code Review 中发现，记录在此待后续修复。~~  
+> ~~以下问题在 2026-05-26 Code Review 中发现，记录在此待后续修复。~~
 > **全部已修复 (2026-05-26).** 以下保留修复记录供参考。
 
 ### ✅ 9.1 CloneStore 将 base64 大图存入 SharedPreferences — 已修复
