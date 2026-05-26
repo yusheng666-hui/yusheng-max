@@ -5,11 +5,15 @@
 /// MobileNet classifier for 20+ scene categories.
 
 import 'dart:math';
+import '../../../../core/scene_taxonomy.dart';
 
 /// Scene analysis result sent to the recommendation engine.
 class SceneAnalysisResult {
-  /// Internal scene key (outdoor/street/indoor/beach/night)
+  /// Internal scene key for pose DB matching (outdoor/street/indoor/beach/night)
   final String sceneClass;
+
+  /// Fine-grained scene ID from taxonomy (e.g. "garden-cherry-blossom")
+  final String fineSceneId;
 
   /// Confidence score [0.0–1.0]
   final double confidence;
@@ -25,6 +29,7 @@ class SceneAnalysisResult {
 
   const SceneAnalysisResult({
     required this.sceneClass,
+    this.fineSceneId = '',
     this.confidence = 0.8,
     this.label = '',
     this.timeOfDay = 'afternoon',
@@ -53,11 +58,14 @@ class SceneAnalyzer {
 
   /// Analyze the current environment and return scene classification.
   ///
-  /// In Phase 1, this uses rules. Phase 2 will use TFLite scene classifier.
+  /// Uses time-of-day rules and optional TFLite hints to match against
+  /// the 120+ scene taxonomy for fine-grained scene labeling.
   SceneAnalysisResult analyze({
     required DateTime now,
     double? latitude,
     double? longitude,
+    String? tfliteClass,
+    String? tfliteTop3Joined,
   }) {
     final hour = now.hour;
     final month = now.month;
@@ -100,39 +108,48 @@ class SceneAnalyzer {
     }
 
     // GPS-based hints
+    String? locationHint;
     if (latitude != null && longitude != null) {
       setLocationHint(latitude, longitude);
       if (_locationSceneHints.containsKey('coastal')) {
         sceneClass = 'beach';
         confidence = 0.78;
+        locationHint = 'coastal';
       }
     }
 
-    // Seasonal adjustments
-    // Summer months → higher beach probability
+    // Seasonal adjustments — summer months → higher beach probability
     if (month >= 6 && month <= 8 && timeOfDay == 'afternoon') {
-      // Could be beach — but don't override coastal GPS
       if (sceneClass == 'outdoor-nature' && Random().nextDouble() < 0.3) {
         sceneClass = 'beach';
-        confidence = 0.55; // lower confidence since it's a guess
+        confidence = 0.55;
       }
     }
 
     // Apply manual override if user has set a scene
     final effectiveScene = _currentScene;
     if (effectiveScene != sceneClass) {
-      // manual override takes precedence
       confidence = 1.0;
     }
 
     _currentScene = effectiveScene;
 
-    return SceneAnalysisResult(
-      sceneClass: effectiveScene,
-      confidence: confidence,
-      label: _sceneLabel(effectiveScene),
+    // ── Fine-grained scene matching via taxonomy ──
+    final baseTflite = tfliteClass ?? effectiveScene;
+    final sceneDef = SceneTaxonomy.match(
+      tfliteClass: baseTflite,
       timeOfDay: timeOfDay,
-      colorPalette: _guessColors(sceneClass, timeOfDay),
+      month: month,
+      locationHint: locationHint,
+    );
+
+    return SceneAnalysisResult(
+      sceneClass: sceneDef.poseDbKey,
+      fineSceneId: sceneDef.id,
+      confidence: confidence,
+      label: sceneDef.label,
+      timeOfDay: timeOfDay,
+      colorPalette: _guessColors(sceneDef.poseDbKey, timeOfDay),
     );
   }
 
@@ -153,22 +170,57 @@ class SceneAnalyzer {
   String _sceneLabel(String key) {
     const labels = {
       'outdoor-nature': '户外自然',
+      'outdoor': '户外',
       'urban-street': '城市街拍',
+      'street': '街拍',
       'indoor': '室内',
       'beach': '海滩',
       'night-scene': '夜景',
+      'night': '夜景',
+      'mountain': '山地',
+      'lake-river': '湖边',
+      'forest': '森林',
+      'garden-park': '公园',
+      'snow': '雪景',
+      'sunset-sunrise': '日出日落',
+      'rainy-street': '雨街',
+      'neon-light': '霓虹',
+      'library': '图书馆',
+      'gym-fitness': '健身房',
+      'restaurant': '餐厅',
+      'market-bazaar': '市集',
+      'stadium': '体育场',
+      'indoor-cafe': '咖啡馆',
+      'indoor-home': '家中',
     };
     return labels[key] ?? key;
   }
 
   List<String> _guessColors(String scene, String timeOfDay) {
-    // Phase 1: return typical palette per scene
     const palettes = {
+      'outdoor': ['green', 'blue', 'brown'],
       'outdoor-nature': ['green', 'blue', 'brown'],
+      'street': ['gray', 'red', 'white'],
       'urban-street': ['gray', 'red', 'white'],
       'indoor': ['warm-yellow', 'brown', 'white'],
       'beach': ['blue', 'sand', 'white'],
+      'night': ['black', 'neon-blue', 'warm-orange'],
       'night-scene': ['black', 'neon-blue', 'warm-orange'],
+      'mountain': ['green', 'gray', 'white'],
+      'lake-river': ['blue', 'green', 'cyan'],
+      'forest': ['dark-green', 'brown', 'gold'],
+      'garden-park': ['green', 'pink', 'yellow'],
+      'snow': ['white', 'ice-blue', 'gray'],
+      'sunset-sunrise': ['orange', 'pink', 'purple'],
+      'rainy-street': ['gray', 'blue-gray', 'reflective'],
+      'neon-light': ['neon-pink', 'cyan', 'purple'],
+      'library': ['warm-brown', 'cream', 'gold'],
+      'gym-fitness': ['gray', 'blue', 'white'],
+      'restaurant': ['warm-yellow', 'brown', 'red'],
+      'market-bazaar': ['red', 'yellow', 'orange'],
+      'stadium': ['green', 'gray', 'white'],
+      'indoor-cafe': ['brown', 'cream', 'warm-yellow'],
+      'indoor-home': ['warm-white', 'beige', 'wood'],
     };
     return palettes[scene] ?? ['green', 'blue'];
   }

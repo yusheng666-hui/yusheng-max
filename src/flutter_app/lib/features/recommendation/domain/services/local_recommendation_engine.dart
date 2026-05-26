@@ -9,7 +9,9 @@ import 'local_pose_loader.dart';
 import '../recommendation_service.dart';
 import '../../../shared/models/recommendation.dart';
 
-/// Scene class to internal key mapping (same as Python backend).
+/// Scene class to internal key mapping.
+/// Maps all TFLite 20-class labels and taxonomy poseDbKeys to the 6 internal
+/// pose-DB keys used for matching.
 const _sceneClassMap = <String, String>{
   'outdoor-nature': 'outdoor',
   'outdoor': 'outdoor',
@@ -24,6 +26,19 @@ const _sceneClassMap = <String, String>{
   'night-scene': 'night',
   'night': 'night',
   'night-neon': 'night',
+  'mountain': 'outdoor',
+  'lake-river': 'outdoor',
+  'forest': 'outdoor',
+  'garden-park': 'outdoor',
+  'snow': 'outdoor',
+  'sunset-sunrise': 'outdoor',
+  'rainy-street': 'street',
+  'neon-light': 'night',
+  'library': 'indoor',
+  'gym-fitness': 'indoor',
+  'restaurant': 'indoor',
+  'market-bazaar': 'street',
+  'stadium': 'outdoor',
 };
 
 /// Style expansion map — user preference → matching pose styles.

@@ -297,7 +297,7 @@ class LightingAnalyzer {
     // Backlight takes priority — it ruins photos the most
     if (backlight.isBacklit) {
       tips.add('你正处于逆光环境，建议打开闪光灯或 HDR 模式补光');
-      if (sceneClass == 'outdoor-nature' || sceneClass == 'beach') {
+      if (sceneClass == 'outdoor-nature' || sceneClass == 'outdoor' || sceneClass == 'beach') {
         tips.add('逆光时可以尝试拍摄剪影风格，侧身站立效果更好');
       }
       return tips;

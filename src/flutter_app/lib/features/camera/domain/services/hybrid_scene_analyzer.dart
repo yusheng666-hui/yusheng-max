@@ -15,6 +15,7 @@ import '../../../../shared/models/scene_features.dart';
 /// Rich scene analysis combining multiple ML and rule-based sources.
 class RichSceneResult {
   final String sceneClass;
+  final String fineSceneId;
   final double sceneConfidence;
   final String timeOfDay;
   final List<String> colorPalette;
@@ -28,6 +29,7 @@ class RichSceneResult {
 
   const RichSceneResult({
     required this.sceneClass,
+    this.fineSceneId = '',
     required this.sceneConfidence,
     required this.timeOfDay,
     required this.colorPalette,
@@ -70,7 +72,6 @@ class HybridSceneAnalyzer {
     required DateTime now,
   }) {
     final tod = _timeOfDayFromHour(now.hour);
-    final ruleResult = _ruleAnalyzer.analyze(now: now);
 
     // Run TFLite scene classification
     TFLiteSceneResult? tfResult;
@@ -81,6 +82,16 @@ class HybridSceneAnalyzer {
         height: height,
       );
     }
+
+    // Build TFLite hints for the rule analyzer
+    final tfliteClass = tfResult?.primaryLabel;
+    final tfliteTop3 = tfResult?.top3.map((t) => t.label).join(',');
+
+    final ruleResult = _ruleAnalyzer.analyze(
+      now: now,
+      tfliteClass: tfliteClass,
+      tfliteTop3Joined: tfliteTop3,
+    );
 
     // Run depth estimation if model is available
     DepthEstimationResult? depthResult;
@@ -112,6 +123,7 @@ class HybridSceneAnalyzer {
 
     return RichSceneResult(
       sceneClass: sceneClass,
+      fineSceneId: ruleResult.fineSceneId,
       sceneConfidence: confidence,
       timeOfDay: tod,
       colorPalette: palette,
@@ -128,11 +140,12 @@ class HybridSceneAnalyzer {
   /// Fallback: rule-based analysis only (when no frame available).
   RichSceneResult analyzeFromRules({required DateTime now}) {
     final result = _ruleAnalyzer.analyze(now: now);
-    final tod = _timeOfDayFromHour(now.hour);
+    final tod = result.timeOfDay;
     final lighting = _estimateLighting(result.sceneClass, tod);
 
     return RichSceneResult(
       sceneClass: result.sceneClass,
+      fineSceneId: result.fineSceneId,
       sceneConfidence: result.confidence,
       timeOfDay: tod,
       colorPalette: result.colorPalette,

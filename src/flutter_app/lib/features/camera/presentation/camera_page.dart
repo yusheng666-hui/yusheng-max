@@ -231,6 +231,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
     // Also update the legacy scene analysis provider for backward compat
     final result = SceneAnalysisResult(
       sceneClass: richResult.sceneClass,
+      fineSceneId: richResult.fineSceneId,
       confidence: richResult.sceneConfidence,
       label: richResult.label,
       timeOfDay: richResult.timeOfDay,
@@ -263,11 +264,12 @@ class _CameraPageState extends ConsumerState<CameraPage>
       final isOnline = ref.read(isOnlineProvider);
       final scene = _lastScene;
       final sceneClass = scene?.sceneClass ?? 'outdoor-nature';
+      final sceneLabel = scene?.label;
 
       if (isOnline) {
         await _fetchFromCloud(scene, sceneClass);
       } else {
-        await _fetchFromLocal(sceneClass);
+        await _fetchFromLocal(sceneClass, sceneLabel: sceneLabel);
       }
     } finally {
       _lastFetchTime = DateTime.now();
@@ -331,7 +333,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
   }
 
   /// Fetch from the local recommendation engine.
-  Future<void> _fetchFromLocal(String sceneClass) async {
+  Future<void> _fetchFromLocal(String sceneClass, {String? sceneLabel}) async {
     try {
       final engine = ref.read(localEngineProvider);
       final service = ref.read(recommendationServiceProvider);
@@ -358,8 +360,19 @@ class _CameraPageState extends ConsumerState<CameraPage>
         skipPoseIds: store.skippedPoseIds,
       );
 
-      service.updateResponse(response);
-      ref.read(currentRecommendationsProvider.notifier).state = response;
+      // Override sceneDetected with fine-grained label if available
+      final displayResponse = sceneLabel != null
+          ? RecommendationResponse(
+              requestId: response.requestId,
+              recommendations: response.recommendations,
+              sessionId: response.sessionId,
+              sceneDetected: sceneLabel,
+              totalCandidates: response.totalCandidates,
+            )
+          : response;
+
+      service.updateResponse(displayResponse);
+      ref.read(currentRecommendationsProvider.notifier).state = displayResponse;
       ref.read(sceneChangedProvider.notifier).state = false;
     } catch (e) {
       debugPrint('Local engine failed: $e');
