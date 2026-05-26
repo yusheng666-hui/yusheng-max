@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api_client.dart';
+import '../../../core/user_preference_store.dart';
 import '../../camera/domain/providers.dart';
 
 const _styleOptions = [
@@ -43,6 +44,23 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   String _skinTone = 'medium';
 
   @override
+  void initState() {
+    super.initState();
+    _loadFromStore();
+  }
+
+  void _loadFromStore() {
+    final store = ref.read(userPreferenceStoreProvider);
+    if (!store.isLoaded) return;
+    setState(() {
+      _selectedStyles
+        ..clear()
+        ..addAll(store.preferredStyles);
+      _difficulty = store.preferredDifficulty;
+    });
+  }
+
+  @override
   void dispose() {
     _nameCtrl.dispose();
     _heightCtrl.dispose();
@@ -70,6 +88,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       final svc = ref.read(recommendationServiceProvider);
       svc.setPreferredStyles(_selectedStyles.toList());
       svc.setPreferredDifficulty(_difficulty);
+
+      final store = ref.read(userPreferenceStoreProvider);
+      store.setPreferredStyles(_selectedStyles.toList());
+      store.setPreferredDifficulty(_difficulty);
 
       setState(() {
         _loading = false;
@@ -199,6 +221,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
             const SizedBox(height: 32),
 
+            _buildStatsSection(),
+
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
@@ -224,6 +248,89 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStatsSection() {
+    final store = ref.watch(userPreferenceStoreProvider);
+    if (!store.isLoaded) return const SizedBox.shrink();
+
+    final topStyles = Map.fromEntries(
+      store.styleAffinity.entries
+          .where((e) => e.value > 0)
+          .toList()
+        ..sort((a, b) => b.value.compareTo(a.value)),
+    );
+
+    final styleLabels = {
+      'fresh': '清新', 'sweet': '甜美', 'cool': '酷飒',
+      'elegant': '优雅', 'casual': '随性', 'natural': '自然',
+    };
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.bar_chart_rounded, size: 16, color: Colors.amber.withOpacity(0.8)),
+              const SizedBox(width: 6),
+              Text('使用统计', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, fontWeight: FontWeight.w500)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _statItem(Icons.camera_alt_outlined, '${store.totalSessions}', '次拍摄'),
+              const SizedBox(width: 24),
+              _statItem(Icons.photo_library_outlined, '${store.totalPhotos}', '张照片'),
+            ],
+          ),
+          if (topStyles.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Text('偏好风格', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: topStyles.entries.take(4).map((e) {
+                final label = styleLabels[e.key] ?? e.key;
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '$label +${e.value}',
+                    style: TextStyle(color: Colors.amber.withOpacity(0.8), fontSize: 11),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _statItem(IconData icon, String value, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 18, color: Colors.white38),
+        const SizedBox(width: 6),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+        const SizedBox(width: 4),
+        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+      ],
     );
   }
 
