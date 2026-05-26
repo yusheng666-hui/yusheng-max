@@ -29,7 +29,7 @@ PoseCraft 是一款 Android 智能拍照助手 APP。当你面对一个拍照场
 │   │   ├── lib/
 │   │   │   ├── features/    # 功能模块（camera / ar / recommendation / evaluation / profile）
 │   │   │   ├── shared/      # 共享数据模型与组件
-│   │   │   └── core/        # 基础设施（网络 / 存储 / ML 引擎）
+│   │   │   └── core/        # 基础设施（网络 / 存储 / TTS / ML 引擎）
 │   │   └── assets/          # TFLite 模型、本地姿势库、图标字体
 │   └── backend/             # Python FastAPI 后端
 │       ├── app/
@@ -48,7 +48,7 @@ PoseCraft 是一款 Android 智能拍照助手 APP。当你面对一个拍照场
 | 层 | 技术 |
 |----|------|
 | 客户端 | Flutter 3.16+ · Riverpod · Camera · MediaPipe · TFLite |
-| 端侧 ML | MediaPipe Pose/Face · MobileNet · MiDaS · YOLOv8-nano |
+| 端侧 ML | MediaPipe Pose · ML Kit Face · MobileNet · MiDaS · 亮度分析 |
 | AR | ARCore (Platform Channel) + 2D CustomPainter fallback |
 | 后端 | Python 3.12 · FastAPI · Celery |
 | 数据库 | PostgreSQL 16 + pgvector · Milvus · Redis · MinIO |
@@ -89,7 +89,7 @@ uvicorn app.main:app --reload
 
 - [x] **Phase 0 — 产品定义**：需求文档、架构设计、姿势知识库设计、项目骨架
 - [ ] **Phase 1 — 姿势推荐内核**：5 场景 100 姿势、基础 AR 叠加、端云混合推理
-- [ ] **Phase 2 — 全场景 + 全人群**：100+ 场景、500+ 姿势、多人场景、摄影师模式
+- [x] **Phase 2 — 全场景 + 全人群**：300 姿势库、AR 对齐评分、相机参数指导、服装道具推荐、摄影师模式、GPU LUT 预设、TTS 语音引导、光线全分析、表情检测、拍后评估
 - [ ] **Phase 3 — 社区 + 商业化**：姿势广场、POI 数据库、姿势克隆、Pro 订阅
 
 ---

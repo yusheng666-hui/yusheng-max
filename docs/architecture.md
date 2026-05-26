@@ -1,6 +1,6 @@
 # 技术架构设计 (Architecture Design)
 
-> 版本: v1.2 | 日期: 2026-05-25 | 状态: Phase 2 完成，代码已同步
+> 版本: v1.3 | 日期: 2026-05-26 | 状态: Phase 2 核心功能完成（TTS/光线/表情/拍后评估已集成）
 
 ---
 
@@ -190,6 +190,7 @@ src/flutter_app/
 │   ├── core/                                   # 核心基础设施
 │   │   ├── api_client.dart                     # Dio HTTP 客户端
 │   │   ├── connectivity_checker.dart           # 在线/离线检测
+│   │   ├── tts_service.dart                    # TTS 语音引导（防抖/静音/分场景）
 │   │   └── constants.dart                      # API/MlModels/StorageKeys 常量
 │   │
 │   ├── features/                               # 功能模块 (feature-first)
@@ -202,7 +203,8 @@ src/flutter_app/
 │   │   │   │       ├── mode_switcher.dart      # 前后摄切换
 │   │   │   │       ├── camera_params_card.dart # 参数建议卡片 (右)
 │   │   │   │       ├── styling_card.dart       # 服装道具卡片 (左)
-│   │   │   │       └── photographer_guide_bar.dart  # 构图引导栏
+│   │   │   │       ├── photographer_guide_bar.dart  # 构图引导栏
+│   │   │   │       └── expression_guide_overlay.dart # 表情引导文字叠加
 │   │   │   └── domain/
 │   │   │       ├── providers.dart              # 所有 Riverpod providers
 │   │   │       └── services/
@@ -211,6 +213,8 @@ src/flutter_app/
 │   │   │           ├── hybrid_scene_analyzer.dart # TFLite+规则混合分析器
 │   │   │           ├── tflite_scene_classifier.dart # MobileNetV3 TFLite 封装
 │   │   │           ├── tflite_depth_estimator.dart  # MiDaS 深度估计 TFLite
+│   │   │           ├── lighting_analyzer.dart   # 光质/逆光/方向分析（NV21 Y平面）
+│   │   │           ├── expression_detector.dart # ML Kit 6分类表情检测
 │   │   │           └── camera_params_service.dart   # 相机参数推荐 (小白+进阶)
 │   │   │
 │   │   ├── ar/                                 # AR 叠加模块
@@ -241,7 +245,8 @@ src/flutter_app/
 │   │   │       └── services/
 │   │   │           ├── preset_loader.dart       # 预设加载与索引
 │   │   │           ├── hald_clut_engine.dart    # CPU Hald CLUT (缩略图)
-│   │   │           └── gpu_lut_engine.dart      # GPU Shader LUT (实时预览)
+│   │   │           ├── gpu_lut_engine.dart      # GPU Shader LUT (实时预览)
+│   │   │           └── local_evaluation_engine.dart # 本地四维评分引擎
 │   │   │
 │   │   └── profile/                            # 用户模块
 │   │       └── presentation/
@@ -294,6 +299,17 @@ cameraControllerProvider        — CameraController
 ├── apiClientProvider           — ApiClient (http://10.0.2.2:8080)
 ├── connectivityCheckerProvider — ConnectivityChecker
 │   └── isOnlineProvider        — bool
+│
+├── lightingAnalyzerProvider     — LightingAnalyzer (光质/逆光/方向)
+│   └── lightingAnalysisResultProvider — LightingAnalysisResult?
+│
+├── expressionDetectorProvider   — ExpressionDetector (ML Kit 6分类)
+│   └── expressionResultProvider — ExpressionResult?
+│
+├── ttsServiceProvider           — TtsService (防抖语音引导)
+├── ttsMutedProvider             — bool (静音状态)
+│
+├── alignmentResultProvider      — AlignmentResult? (共享对齐评分)
 │
 ├── presetLoaderProvider        — PresetLoader (10预设)
 ├── gpuLutEngineProvider        — GpuLutEngine (GPU Shader)
