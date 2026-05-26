@@ -9,11 +9,11 @@ setup-python:
 setup: setup-flutter setup-python
 
 format:
-	cd src/backend && black src/backend/app/ src/backend/tests/ && ruff check --fix src/backend/app/ src/backend/tests/
+	cd src/backend && black app/ tests/ && ruff check --fix app/ tests/
 	cd src/flutter_app && dart format lib/ test/
 
 lint:
-	cd src/backend && ruff check src/backend/app/ src/backend/tests/ && mypy src/backend/app/
+	cd src/backend && ruff check app/ tests/ && mypy app/
 	cd src/flutter_app && dart analyze
 
 test:

@@ -1,6 +1,6 @@
 # 技术架构设计 (Architecture Design)
 
-> 版本: v1.10 | 日期: 2026-05-26 | 状态: Phase 2 & Phase 3 全部完成，后端已实现 + Code Review 修复
+> 版本: v1.11 | 日期: 2026-05-26 | 状态: Phase 2 & Phase 3 全部完成，后端已实现 + Code Review 修复 + 工程基建（CI/CD + lint + 测试 + pre-commit）
 
 ---
 
@@ -696,12 +696,14 @@ Collection: pose_vectors
 ## 八、后续待细化
 
 - [x] CI/CD 流水线设计 — 已完成（GitHub Actions: PR checks + main build, pre-commit hooks, Makefile）
+- [x] 10 个基础 LUT 的制作与调校 — 已完成（`assets/presets/`，含 .cube + Hald PNG + 元数据 JSON）
+- [x] 核心单元测试 — 已完成（Flutter 5 测试文件 50+ 用例 + Python 2 测试文件 13 用例）
+- [x] Lint 配置 — 已完成（Flutter: analysis_options.yaml, Python: pyproject.toml Black+Ruff+mypy）
 - [ ] 端侧模型的具体训练计划和数据集需求
 - [ ] ARCore 在主流国产手机上的兼容性测试清单
 - [ ] 云端推理成本预估（按 Qwen-VL API 定价 × 预估调用量）
 - [ ] 主流手机专业模式能力真机测试（相机参数知识库的数据来源）
 - [ ] 服装/道具知识库种子数据采集（6 场景 × 5 道具）
-- [ ] 10 个基础 LUT 的制作与调校
 - [ ] 安全审计清单（数据加密、传输安全、存储安全）
 - [ ] Firebase/Google Play 上架准备清单
 
