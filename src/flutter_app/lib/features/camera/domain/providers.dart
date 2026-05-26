@@ -20,6 +20,7 @@ import '../../recommendation/domain/services/local_pose_loader.dart';
 import '../../recommendation/domain/services/local_recommendation_engine.dart';
 import '../../recommendation/domain/services/styling_service.dart';
 import '../../recommendation/domain/services/photographer_guidance_service.dart';
+import '../../video_guide/domain/camera_movements.dart';
 
 // ── Camera ──────────────────────────────────────────────────────
 
@@ -263,6 +264,15 @@ final gridOverlayEnabledProvider = StateProvider<bool>((ref) => true);
 /// Bottom nav bar height inset — set by HomeShell, read by CameraPage
 /// to adjust its bottom padding when embedded in a tab shell.
 final bottomNavInsetProvider = StateProvider<double>((ref) => 0);
+
+// ── Video Movement Guide ─────────────────────────────────────────
+
+/// Active camera movement for shooting overlay (set from MovementDetailPage).
+final activeMovementProvider =
+    StateProvider<CameraMovement?>((ref) => null);
+
+/// Whether the movement guide overlay is visible.
+final showMovementOverlayProvider = StateProvider<bool>((ref) => true);
 
 // ── TTS ─────────────────────────────────────────────────────────
 

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../camera/domain/providers.dart';
 import '../../../camera/domain/services/pose_detector.dart';
 import '../../../shared/models/recommendation.dart';
+import '../../../shared/models/pose.dart';
+import '../../../pose_clone/domain/providers.dart';
 
 /// AR skeleton overlay rendered on top of the camera preview.
 ///
@@ -25,6 +27,7 @@ class ArOverlay extends ConsumerWidget {
         ? recommendations.recommendations[activeIndex]
         : null;
 
+    final cloneTarget = ref.watch(cloneTargetSkeletonProvider);
     final size = MediaQuery.of(context).size;
 
     return Stack(
@@ -34,10 +37,43 @@ class ArOverlay extends ConsumerWidget {
             painter: _SkeletonOverlayPainter(
               targetPose: activeRec,
               userPoses: detectedPoses,
+              cloneTarget: cloneTarget,
             ),
             size: size,
           ),
         ),
+        // Clone mode indicator
+        if (cloneTarget != null)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 12,
+            right: 12,
+            child: GestureDetector(
+              onTap: () {
+                ref.read(cloneTargetSkeletonProvider.notifier).state = null;
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.magentaAccent.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.magentaAccent.withOpacity(0.5)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(Icons.content_copy, color: Colors.magentaAccent, size: 14),
+                    SizedBox(width: 4),
+                    Text(
+                      '克隆模式',
+                      style: TextStyle(color: Colors.magentaAccent, fontSize: 11),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.close, color: Colors.magentaAccent, size: 14),
+                  ],
+                ),
+              ),
+            ),
+          ),
         // Alignment score ring + correction hints
         if (alignment != null)
           Positioned(
@@ -83,12 +119,25 @@ const _userColors = [
 class _SkeletonOverlayPainter extends CustomPainter {
   final PoseRecommendation? targetPose;
   final List<DetectedPose> userPoses;
+  final Skeleton3D? cloneTarget;
 
-  _SkeletonOverlayPainter({this.targetPose, this.userPoses = const []});
+  _SkeletonOverlayPainter({
+    this.targetPose,
+    this.userPoses = const [],
+    this.cloneTarget,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (targetPose != null && targetPose!.skeleton.keypoints.isNotEmpty) {
+    // Clone target takes priority when set
+    if (cloneTarget != null && cloneTarget!.keypoints.isNotEmpty) {
+      _drawSkeleton(
+        canvas, size, cloneTarget!.keypoints,
+        Colors.magentaAccent.withOpacity(0.9),
+        Colors.magentaAccent.withOpacity(0.25),
+        3.0,
+      );
+    } else if (targetPose != null && targetPose!.skeleton.keypoints.isNotEmpty) {
       _drawSkeleton(
         canvas, size, targetPose!.skeleton.keypoints,
         Colors.white.withOpacity(0.8), Colors.white.withOpacity(0.2), 3.0,

@@ -1,13 +1,14 @@
 /// Home shell with bottom navigation bar.
 ///
-/// Wraps CameraPage, PoseSquarePage, and ProfilePage in an IndexedStack
-/// with a 3-tab BottomNavigationBar. Sets bottomNavInsetProvider so
-/// CameraPage can adjust its bottom padding.
+/// Wraps CameraPage, PoseSquarePage, DiscoveryPage, and ProfilePage in an
+/// IndexedStack with a 4-tab BottomNavigationBar. Sets bottomNavInsetProvider
+/// so CameraPage can adjust its bottom padding.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/camera/domain/providers.dart';
 import '../../features/camera/presentation/camera_page.dart';
 import '../../features/pose_square/presentation/pose_square_page.dart';
+import '../../features/discovery/presentation/discovery_page.dart';
 import '../../features/profile/presentation/profile_page.dart';
 
 class HomeShell extends ConsumerStatefulWidget {
@@ -23,6 +24,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   static const _tabs = <_TabDef>[
     _TabDef(label: '拍摄', icon: Icons.camera_alt),
     _TabDef(label: '姿势广场', icon: Icons.auto_awesome),
+    _TabDef(label: '景点', icon: Icons.place_outlined),
     _TabDef(label: '我的', icon: Icons.person_outline),
   ];
 
@@ -42,6 +44,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         children: const [
           CameraPage(),
           PoseSquarePage(),
+          DiscoveryPage(),
           ProfilePage(),
         ],
       ),

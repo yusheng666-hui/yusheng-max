@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/providers.dart';
 import 'widgets/pose_grid_card.dart';
 import 'pose_detail_page.dart';
+import '../../pose_clone/presentation/clone_page.dart';
+import '../../video_guide/presentation/video_guide_page.dart';
 
 const _filterOptions = [
   ('全部', null, null, null),
@@ -45,6 +47,26 @@ class _PoseSquarePageState extends ConsumerState<PoseSquarePage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.videocam_outlined),
+            tooltip: '运镜指导',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const VideoGuidePage()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.content_copy),
+            tooltip: '姿势克隆',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ClonePage()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.bookmark_outline),
             tooltip: '仅看收藏',

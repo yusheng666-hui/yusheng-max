@@ -44,4 +44,5 @@ class StorageKeys {
   static const String onboardingComplete = 'onboarding_complete';
   static const String poseSquareVotes = 'pose_square_votes';
   static const String poseSquareCollections = 'pose_square_collections';
+  static const String clonedPoses = 'cloned_poses';
 }

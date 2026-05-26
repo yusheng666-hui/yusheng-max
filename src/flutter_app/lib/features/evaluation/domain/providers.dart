@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/preset_loader.dart';
 import 'services/gpu_lut_engine.dart';
 import 'services/local_evaluation_engine.dart';
+import 'services/preset_recommendation_service.dart';
 import '../../../shared/models/preset.dart';
 
 // ── Preset Loading ──────────────────────────────────────────────
@@ -25,6 +26,18 @@ final gpuLutEngineProvider = Provider<GpuLutEngine>((ref) {
   engine.init();
   return engine;
 });
+
+/// Preset recommendation service — intelligent color grading suggestions.
+final presetRecommendationServiceProvider =
+    Provider<PresetRecommendationService>((ref) {
+  final loader = ref.watch(presetLoaderProvider);
+  return PresetRecommendationService(loader);
+});
+
+/// Current preset recommendations for the last capture.
+/// Stored as state so EvaluationResultSheet can display them.
+final currentPresetRecommendationsProvider =
+    StateProvider<List<PresetRecommendation>>((ref) => []);
 
 /// Local evaluation engine — scores photos without cloud API.
 final localEvaluationEngineProvider = Provider<LocalEvaluationEngine>((ref) {

@@ -10,6 +10,7 @@ import 'widgets/mode_switcher.dart';
 import 'widgets/camera_params_card.dart';
 import 'widgets/styling_card.dart';
 import 'widgets/photographer_guide_bar.dart';
+import 'widgets/movement_guide_overlay.dart';
 import '../../ar/presentation/widgets/ar_overlay.dart';
 import '../../recommendation/presentation/widgets/recommendation_panel.dart';
 import '../domain/providers.dart';
@@ -398,13 +399,18 @@ class _CameraPageState extends ConsumerState<CameraPage>
       // Restart stream immediately — don't wait for navigation
       await _controller!.startImageStream(_onFrameAvailable);
 
-      // Determine recommended preset from current scene
-      final presetLoader = ref.read(presetLoaderProvider);
-      String? recommendedPresetId;
-      if (presetLoader.isLoaded) {
-        final recs = presetLoader.getForScene(sceneClass, limit: 1);
-        if (recs.isNotEmpty) recommendedPresetId = recs.first.presetId;
-      }
+      // Determine recommended presets using intelligent matching
+      final recService = ref.read(presetRecommendationServiceProvider);
+      final userPrefs = ref.read(userPreferenceStoreProvider);
+      final recommendations = recService.recommend(
+        sceneClass: sceneClass,
+        lighting: lighting,
+        preferredStyles: userPrefs.preferredStyles,
+        timeOfDay: timeOfDay,
+        limit: 3,
+      );
+      ref.read(currentPresetRecommendationsProvider.notifier).state =
+          recommendations;
 
       // Record photo capture for personalization
       final activeRec = ref.read(currentRecommendationsProvider)?.recommendations
@@ -437,10 +443,9 @@ class _CameraPageState extends ConsumerState<CameraPage>
       await EvaluationResultSheet.show(
         context,
         result,
-        onApplyPreset: () {
+        onApplyPreset: (presetId) {
           Navigator.pop(context); // dismiss sheet
-          // Navigate to review/edit
-          _navigateToEdit(photo.path, recommendedPresetId);
+          _navigateToEdit(photo.path, presetId);
         },
         onRetake: () {
           Navigator.pop(context); // just dismiss, stay on camera
@@ -740,6 +745,9 @@ class _CameraPageState extends ConsumerState<CameraPage>
                 ),
               ),
             ),
+
+          // Movement guide overlay
+          const MovementGuideOverlay(),
 
           // Photographer guidance bar
           const Positioned(
