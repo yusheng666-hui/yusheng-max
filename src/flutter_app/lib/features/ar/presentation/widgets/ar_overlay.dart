@@ -110,17 +110,13 @@ class _SkeletonOverlayPainter extends CustomPainter {
   }
 
   List<_PaintKeypoint> _extractUserKeypoints(DetectedPose pose, Size size) {
-    try {
-      return pose.keypoints.map((k) {
-        return _PaintKeypoint(
-          x: k.x * size.width,
-          y: k.y * size.height,
-          likelihood: k.likelihood,
-        );
-      }).toList();
-    } catch (_) {
-      return [];
-    }
+    return pose.keypoints.map((k) {
+      return _PaintKeypoint(
+        x: k.x * size.width,
+        y: k.y * size.height,
+        likelihood: k.likelihood,
+      );
+    }).toList();
   }
 
   void _drawSkeleton(Canvas canvas, Size size, List<dynamic> keypoints,

@@ -57,8 +57,8 @@ final detectedPersonCountProvider = Provider<int>((ref) {
   return poses.where((p) => p.isReliable).length;
 });
 
-/// User-selected person-count mode: solo, couple, friends, or family.
-final personCountModeProvider = StateProvider<String>((ref) => 'solo');
+/// User-selected person-count mode.
+final personCountModeProvider = StateProvider<PersonCountMode>((ref) => PersonCountMode.solo);
 
 /// Whether the pose detector is currently processing a frame.
 final isPoseDetectingProvider = StateProvider<bool>((ref) => false);

@@ -272,15 +272,10 @@ class _CameraPageState extends ConsumerState<CameraPage>
     try {
       final apiClient = ref.read(apiClientProvider);
       final service = ref.read(recommendationServiceProvider);
-      // Sync person count mode for cloud recommendation
+      // Sync person count for cloud recommendation
       final mode = ref.read(personCountModeProvider);
-      final personCount = switch (mode) {
-        'couple' => 2,
-        'friends' => 3,
-        'family' => 4,
-        _ => 1,
-      };
-      service.setPersonCount(personCount);
+      final personCount = ref.read(detectedPersonCountProvider);
+      service.setPersonCount(personCount > 0 ? personCount : _modeToMinCount(mode));
       final richResult = ref.read(richSceneResultProvider);
       final timeOfDay = scene?.timeOfDay ?? _timeOfDayFromHour(DateTime.now().hour);
 
@@ -334,7 +329,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
       final service = ref.read(recommendationServiceProvider);
       final mode = ref.read(personCountModeProvider);
       // Map mode to category — null for solo (shows all solo/expression/advanced_solo)
-      final category = mode == 'solo' ? null : mode;
+      final category = mode == PersonCountMode.solo ? null : mode.name;
 
       final response = engine.recommend(
         sceneClass: sceneClass,
@@ -466,6 +461,16 @@ class _CameraPageState extends ConsumerState<CameraPage>
           targetLens == CameraLensDirection.front;
     } catch (e) {
       debugPrint('Camera switch failed: $e');
+    }
+  }
+
+  /// Minimum person count fallback when no one is detected yet.
+  int _modeToMinCount(PersonCountMode mode) {
+    switch (mode) {
+      case PersonCountMode.couple: return 2;
+      case PersonCountMode.friends: return 2;
+      case PersonCountMode.family: return 3;
+      case PersonCountMode.solo: return 1;
     }
   }
 

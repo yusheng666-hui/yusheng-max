@@ -6,12 +6,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/providers.dart';
+import '../../domain/services/pose_detector.dart';
 
 const _modes = [
-  ('solo', '单人'),
-  ('couple', '双人'),
-  ('friends', '闺蜜'),
-  ('family', '家庭'),
+  (PersonCountMode.solo, '单人'),
+  (PersonCountMode.couple, '双人'),
+  (PersonCountMode.friends, '闺蜜'),
+  (PersonCountMode.family, '家庭'),
 ];
 
 class PersonCountSelector extends ConsumerWidget {

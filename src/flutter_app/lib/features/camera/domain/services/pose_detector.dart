@@ -7,6 +7,9 @@ import 'dart:async';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:camera/camera.dart';
 
+/// Person-count mode for filtering recommendations.
+enum PersonCountMode { solo, couple, friends, family }
+
 /// Detected pose with 33 keypoints in normalized coordinates.
 class DetectedPose {
   final List<DetectedKeypoint> keypoints;
