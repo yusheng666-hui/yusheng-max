@@ -2,7 +2,7 @@
 
 > AI 智能拍照姿势与角度推荐系统 —— 打开相机，AR 告诉你怎样拍最好看
 
-[![CI](https://github.com/yusheng666-hui/相机max/actions/workflows/main.yml/badge.svg)](https://github.com/yusheng666-hui/相机max/actions/workflows/main.yml)
+[![CI](https://github.com/yusheng666-hui/yusheng-max/actions/workflows/main.yml/badge.svg)](https://github.com/yusheng666-hui/yusheng-max/actions/workflows/main.yml)
 
 ---
 
