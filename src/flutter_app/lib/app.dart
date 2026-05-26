@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'features/camera/presentation/camera_page.dart';
-import 'features/profile/presentation/profile_page.dart';
+import 'shared/widgets/home_shell.dart';
 
 class PoseCraftApp extends StatelessWidget {
   const PoseCraftApp({super.key});
@@ -16,10 +15,7 @@ class PoseCraftApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Roboto',
       ),
-      home: const CameraPage(),
-      routes: {
-        '/profile': (_) => const ProfilePage(),
-      },
+      home: const HomeShell(),
     );
   }
 }

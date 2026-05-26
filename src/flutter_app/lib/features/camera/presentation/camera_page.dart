@@ -772,7 +772,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
                     const SizedBox(width: 48),
                   ],
                 ),
-                SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
+                SizedBox(height: MediaQuery.of(context).padding.bottom + 20 + ref.watch(bottomNavInsetProvider)),
               ],
             ),
           ),

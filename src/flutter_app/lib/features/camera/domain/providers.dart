@@ -260,6 +260,10 @@ final flashEnabledProvider = StateProvider<bool>((ref) => false);
 /// Whether grid overlay is shown.
 final gridOverlayEnabledProvider = StateProvider<bool>((ref) => true);
 
+/// Bottom nav bar height inset — set by HomeShell, read by CameraPage
+/// to adjust its bottom padding when embedded in a tab shell.
+final bottomNavInsetProvider = StateProvider<double>((ref) => 0);
+
 // ── TTS ─────────────────────────────────────────────────────────
 
 /// TTS service for real-time voice guidance.
