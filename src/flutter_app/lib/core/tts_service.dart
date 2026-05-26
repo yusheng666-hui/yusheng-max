@@ -6,6 +6,7 @@
 
 import 'package:flutter_tts/flutter_tts.dart';
 import '../features/ar/domain/services/alignment_scorer.dart';
+import '../features/camera/domain/services/lighting_analyzer.dart';
 import '../shared/models/recommendation.dart';
 
 class TtsService {
@@ -119,6 +120,29 @@ class TtsService {
         text = '差得有点远，${alignment.hints.first}';
       }
       _lastGradeWasLow = true;
+    }
+
+    if (text != null) {
+      await speak(text);
+    }
+  }
+
+  // ── Lighting tips ───────────────────────────────────────────────
+
+  /// Speak lighting advice when significant conditions change.
+  Future<void> speakLightingTips(LightingAnalysisResult result) async {
+    if (_muted || !_initialized) return;
+
+    String? text;
+
+    if (result.backlight.isBacklit) {
+      if (result.backlight.severity > 0.6) {
+        text = '注意！你正处于严重逆光环境，建议打开闪光灯补光';
+      } else {
+        text = '检测到逆光，可以试试打开 HDR 或换个角度';
+      }
+    } else if (result.quality == LightQualityType.hard) {
+      text = '光线比较硬，面部容易有阴影';
     }
 
     if (text != null) {

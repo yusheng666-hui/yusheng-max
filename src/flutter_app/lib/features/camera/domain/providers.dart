@@ -11,6 +11,7 @@ import '../domain/services/pose_detector.dart';
 import '../domain/services/scene_analyzer.dart';
 import '../domain/services/hybrid_scene_analyzer.dart';
 import '../domain/services/camera_params_service.dart';
+import '../domain/services/lighting_analyzer.dart';
 import '../../ar/domain/services/alignment_scorer.dart';
 import '../../recommendation/domain/services/recommendation_service.dart';
 import '../../recommendation/domain/services/local_pose_loader.dart';
@@ -254,6 +255,16 @@ final ttsServiceProvider = Provider<TtsService>((ref) {
 
 /// Whether TTS voice is muted.
 final ttsMutedProvider = StateProvider<bool>((ref) => false);
+
+// ── Lighting Analysis ───────────────────────────────────────────
+
+/// Lighting analyzer for on-device light quality and backlight detection.
+final lightingAnalyzerProvider = Provider<LightingAnalyzer>((ref) {
+  return LightingAnalyzer();
+});
+
+/// Latest lighting analysis result from camera frames.
+final lightingAnalysisResultProvider = StateProvider<LightingAnalysisResult?>((ref) => null);
 
 /// Current skeleton alignment between user pose and active recommendation.
 final alignmentResultProvider = Provider<AlignmentResult?>((ref) {

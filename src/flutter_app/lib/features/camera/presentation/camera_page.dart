@@ -16,6 +16,7 @@ import '../domain/providers.dart';
 import '../domain/services/pose_detector.dart';
 import '../domain/services/scene_analyzer.dart';
 import '../domain/services/hybrid_scene_analyzer.dart';
+import '../domain/services/lighting_analyzer.dart';
 import '../../../core/api_client.dart';
 import '../../../core/connectivity_checker.dart';
 import '../../../core/tts_service.dart';
@@ -48,7 +49,9 @@ class _CameraPageState extends ConsumerState<CameraPage>
   SceneAnalysisResult? _lastScene;
   DateTime? _lastFetchTime;
   int _frameSkipCounter = 0;
+  int _lightingFrameCounter = 0;
   static const int _frameProcessInterval = 6; // process every 6th frame (~5 fps at 30fps)
+  static const int _lightingFrameInterval = 30; // analyze lighting every 30th frame (~1 fps)
   static const Duration _analysisInterval = Duration(seconds: 3);
   static const Duration _fetchDebounce = Duration(seconds: 10);
 
@@ -152,11 +155,33 @@ class _CameraPageState extends ConsumerState<CameraPage>
   /// overwhelming the ML Kit pipeline.
   void _onFrameAvailable(CameraImage image) {
     _frameSkipCounter++;
-    if (_frameSkipCounter < _frameProcessInterval) return;
-    _frameSkipCounter = 0;
+    _lightingFrameCounter++;
 
-    if (_poseDetector == null) return;
-    _poseDetector!.processFrame(image);
+    // Pose detection at ~5 fps
+    if (_frameSkipCounter >= _frameProcessInterval) {
+      _frameSkipCounter = 0;
+      if (_poseDetector != null) {
+        _poseDetector!.processFrame(image);
+      }
+    }
+
+    // Lighting analysis at ~1 fps (lighting doesn't change rapidly)
+    if (_lightingFrameCounter >= _lightingFrameInterval) {
+      _lightingFrameCounter = 0;
+      final scene = _lastScene;
+      final sceneClass = scene?.sceneClass ?? 'outdoor-nature';
+      final timeOfDay = scene?.timeOfDay ?? _timeOfDayFromHour(DateTime.now().hour);
+
+      final analyzer = ref.read(lightingAnalyzerProvider);
+      final result = analyzer.analyzeFrame(
+        image,
+        sceneClass: sceneClass,
+        timeOfDay: timeOfDay,
+      );
+      if (result != null) {
+        ref.read(lightingAnalysisResultProvider.notifier).state = result;
+      }
+    }
   }
 
   /// Called when the pose detector finds a pose in a frame.
@@ -233,13 +258,16 @@ class _CameraPageState extends ConsumerState<CameraPage>
       final richResult = ref.read(richSceneResultProvider);
       final timeOfDay = scene?.timeOfDay ?? _timeOfDayFromHour(DateTime.now().hour);
 
-      // Use rich scene result lighting/spatial if available, else fall back
-      final lighting = richResult?.lighting ?? LightingInfo(
-        direction: [0.5, 0.3, 0.8],
-        intensity: timeOfDay == 'night' ? 0.2 : 0.65,
-        colorTemp: timeOfDay == 'golden-hour' ? 3500.0 : 5500.0,
-        contrastRatio: timeOfDay == 'night' ? 4.0 : 2.5,
-      );
+      // Prefer frame-based lighting analysis, fall back to rich scene rules
+      final frameLighting = ref.read(lightingAnalysisResultProvider);
+      final lighting = frameLighting?.baseInfo ??
+          richResult?.lighting ??
+          LightingInfo(
+            direction: [0.5, 0.3, 0.8],
+            intensity: timeOfDay == 'night' ? 0.2 : 0.65,
+            colorTemp: timeOfDay == 'golden-hour' ? 3500.0 : 5500.0,
+            contrastRatio: timeOfDay == 'night' ? 4.0 : 2.5,
+          );
 
       final spatial = richResult?.spatial ?? const SpatialInfo(
         dominantPlanes: [],
@@ -415,6 +443,16 @@ class _CameraPageState extends ConsumerState<CameraPage>
     // Sync TTS mute state
     ref.listen(ttsMutedProvider, (prev, next) {
       ref.read(ttsServiceProvider).setMuted(next);
+    });
+
+    // TTS: speak lighting tips when conditions change significantly
+    ref.listen(lightingAnalysisResultProvider, (prev, next) {
+      if (next != null &&
+          (prev == null ||
+              prev.backlight.isBacklit != next.backlight.isBacklit ||
+              prev.quality != next.quality)) {
+        ref.read(ttsServiceProvider).speakLightingTips(next);
+      }
     });
 
     return Scaffold(

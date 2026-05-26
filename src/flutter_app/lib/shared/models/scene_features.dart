@@ -46,11 +46,23 @@ class LightingInfo extends Equatable {
   final double colorTemp;
   final double contrastRatio;
 
+  /// Light quality classification (hard / soft / diffused).
+  final String? quality;
+
+  /// Whether the subject is backlit.
+  final bool? isBacklit;
+
+  /// Severity of backlight [0.0–1.0].
+  final double? backlightSeverity;
+
   const LightingInfo({
     required this.direction,
     required this.intensity,
     required this.colorTemp,
     required this.contrastRatio,
+    this.quality,
+    this.isBacklit,
+    this.backlightSeverity,
   });
 
   Map<String, dynamic> toJson() => {
@@ -58,10 +70,21 @@ class LightingInfo extends Equatable {
         'intensity': intensity,
         'color_temp': colorTemp,
         'contrast_ratio': contrastRatio,
+        if (quality != null) 'quality': quality,
+        if (isBacklit != null) 'is_backlit': isBacklit,
+        if (backlightSeverity != null) 'backlight_severity': backlightSeverity,
       };
 
   @override
-  List<Object?> get props => [direction, intensity, colorTemp, contrastRatio];
+  List<Object?> get props => [
+        direction,
+        intensity,
+        colorTemp,
+        contrastRatio,
+        quality,
+        isBacklit,
+        backlightSeverity,
+      ];
 }
 
 class SpatialInfo extends Equatable {
