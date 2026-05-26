@@ -24,6 +24,7 @@ import '../../../shared/models/scene_features.dart';
 import '../../recommendation/domain/services/recommendation_service.dart';
 import '../../recommendation/domain/services/local_recommendation_engine.dart';
 import '../../evaluation/presentation/review_edit_page.dart';
+import '../../evaluation/presentation/widgets/evaluation_result_sheet.dart';
 import '../../evaluation/domain/providers.dart';
 
 const _uuid = Uuid();
@@ -323,7 +324,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
     }
   }
 
-  /// Handle photo capture.
+  /// Handle photo capture with evaluation flow.
   Future<void> _onCapture() async {
     if (_controller == null || !_controller!.value.isInitialized) return;
 
@@ -332,41 +333,70 @@ class _CameraPageState extends ConsumerState<CameraPage>
       await _controller!.stopImageStream();
       final photo = await _controller!.takePicture();
 
+      // Snapshot evaluation data at capture moment
+      final alignment = ref.read(alignmentResultProvider);
+      final lighting = ref.read(lightingAnalysisResultProvider);
+      final sceneResult = ref.read(sceneAnalysisResultProvider);
+      final sceneClass = sceneResult?.sceneClass ?? 'outdoor-nature';
+      final timeOfDay = sceneResult?.timeOfDay ?? 'afternoon';
+
       // Restart stream immediately — don't wait for navigation
       await _controller!.startImageStream(_onFrameAvailable);
 
       // Determine recommended preset from current scene
-      final sceneResult = ref.read(sceneAnalysisResultProvider);
       final presetLoader = ref.read(presetLoaderProvider);
       String? recommendedPresetId;
       if (presetLoader.isLoaded) {
-        final sceneClass = sceneResult?.sceneClass ?? 'outdoor-nature';
         final recs = presetLoader.getForScene(sceneClass, limit: 1);
         if (recs.isNotEmpty) recommendedPresetId = recs.first.presetId;
       }
 
-      if (!mounted) return;
-
-      // Navigate to review/edit screen
-      final savedPath = await Navigator.push<String>(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ReviewEditPage(
-            photoPath: photo.path,
-            recommendedPresetId: recommendedPresetId,
-          ),
-        ),
+      // Generate local evaluation
+      final evalEngine = ref.read(localEvaluationEngineProvider);
+      final result = evalEngine.evaluate(
+        alignment: alignment,
+        lighting: lighting,
+        sceneClass: sceneClass,
+        timeOfDay: timeOfDay,
       );
 
-      if (savedPath != null) {
-        debugPrint('Photo saved: $savedPath');
-      }
+      if (!mounted) return;
+
+      // Show evaluation sheet first, then navigate to edit page if user wants
+      await EvaluationResultSheet.show(
+        context,
+        result,
+        onApplyPreset: () {
+          Navigator.pop(context); // dismiss sheet
+          // Navigate to review/edit
+          _navigateToEdit(photo.path, recommendedPresetId);
+        },
+        onRetake: () {
+          Navigator.pop(context); // just dismiss, stay on camera
+        },
+      );
     } catch (e) {
       debugPrint('Capture failed: $e');
       // Ensure stream is restarted
       if (_controller != null && !_controller!.value.isStreamingImages) {
         _controller!.startImageStream(_onFrameAvailable);
       }
+    }
+  }
+
+  Future<void> _navigateToEdit(String photoPath, String? recommendedPresetId) async {
+    if (!mounted) return;
+    final savedPath = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReviewEditPage(
+          photoPath: photoPath,
+          recommendedPresetId: recommendedPresetId,
+        ),
+      ),
+    );
+    if (savedPath != null) {
+      debugPrint('Photo saved: $savedPath');
     }
   }
 

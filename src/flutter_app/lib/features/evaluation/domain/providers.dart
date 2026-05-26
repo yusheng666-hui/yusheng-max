@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'services/preset_loader.dart';
 import 'services/gpu_lut_engine.dart';
+import 'services/local_evaluation_engine.dart';
 import '../../../shared/models/preset.dart';
 
 // ── Preset Loading ──────────────────────────────────────────────
@@ -23,6 +24,11 @@ final gpuLutEngineProvider = Provider<GpuLutEngine>((ref) {
   final engine = GpuLutEngine();
   engine.init();
   return engine;
+});
+
+/// Local evaluation engine — scores photos without cloud API.
+final localEvaluationEngineProvider = Provider<LocalEvaluationEngine>((ref) {
+  return LocalEvaluationEngine();
 });
 
 // ── Active Preset ───────────────────────────────────────────────
