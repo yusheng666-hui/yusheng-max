@@ -251,6 +251,11 @@ class RecommendationEngine:
                 return pose
         return None
 
+    @property
+    def all_poses(self) -> list:
+        """Public read-only access to the full pose list."""
+        return self._all_poses
+
     def get_scene_pose_count(self) -> dict:
         """Return the count of poses per scene for diagnostics."""
         return {k: len(v) for k, v in self._poses.items()}

@@ -1,5 +1,12 @@
-"""SQLAlchemy ORM models — Phase 2 migration target.
+"""SQLAlchemy ORM models."""
 
-Phase 1 uses JSON file store (see domain/user/service.py).
-These models are stubbed for the Phase 2 PostgreSQL migration.
-"""
+from app.db.session import engine
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
+
+
+async def create_all():
+    """Create all tables (dev convenience)."""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)

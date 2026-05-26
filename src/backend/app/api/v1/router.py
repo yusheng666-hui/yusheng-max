@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from . import health, recommend, poses, evaluate, users, presets
+from . import health, recommend, poses, evaluate, users, presets, clone, pois
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -12,3 +12,5 @@ api_router.include_router(poses.router, tags=["poses"])
 api_router.include_router(evaluate.router, tags=["evaluate"])
 api_router.include_router(users.router, tags=["users"])
 api_router.include_router(presets.router, tags=["presets"])
+api_router.include_router(clone.router, tags=["clone"])
+api_router.include_router(pois.router, tags=["pois"])
