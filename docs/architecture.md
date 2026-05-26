@@ -1,6 +1,6 @@
 # 技术架构设计 (Architecture Design)
 
-> 版本: v1.4 | 日期: 2026-05-26 | 状态: Phase 2 全部完成，进入 Phase 3
+> 版本: v1.10 | 日期: 2026-05-26 | 状态: Phase 2 & Phase 3 全部完成，后端已实现 + Code Review 修复
 
 ---
 
@@ -249,19 +249,59 @@ src/flutter_app/
 │   │   │           ├── preset_loader.dart       # 预设加载与索引
 │   │   │           ├── hald_clut_engine.dart    # CPU Hald CLUT (缩略图)
 │   │   │           ├── gpu_lut_engine.dart      # GPU Shader LUT (实时预览)
-│   │   │           └── local_evaluation_engine.dart # 本地四维评分引擎
+│   │   │           ├── local_evaluation_engine.dart # 本地四维评分引擎
+│   │   │           └── preset_recommendation_service.dart # 智能调色推荐 (场景+光线+风格匹配)
+│   │   │
+│   │   ├── pose_square/                        # 姿势广场模块 (Phase 3)
+│   │   │   ├── presentation/
+│   │   │   │   ├── pose_square_page.dart        # 姿势广场浏览页（Grid+筛选）
+│   │   │   │   ├── pose_detail_page.dart        # 姿势详情页（投票/收藏/指导）
+│   │   │   │   └── widgets/
+│   │   │   │       └── pose_grid_card.dart       # 姿势网格卡片
+│   │   │   └── domain/
+│   │   │       ├── providers.dart               # 广场相关 providers
+│   │   │       └── pose_square_store.dart        # 投票/收藏持久化
+│   │   │
+│   │   ├── discovery/                          # 景点发现模块 (Phase 3)
+│   │   │   ├── presentation/
+│   │   │   │   ├── discovery_page.dart           # 景点浏览页（地区筛选）
+│   │   │   │   └── poi_detail_page.dart          # 景点详情页（最佳姿势/角度/时间）
+│   │   │   └── domain/
+│   │   │       ├── providers.dart               # POI 相关 providers
+│   │   │       └── poi_loader.dart              # 52 POI 加载+按地区索引+附近搜索
+│   │   │
+│   │   ├── pose_clone/                         # 姿势克隆模块 (Phase 3)
+│   │   │   ├── presentation/
+│   │   │   │   ├── clone_page.dart             # 相册选图 + 克隆历史
+│   │   │   │   └── clone_result_page.dart      # 骨骼叠加 + 保存/AR复刻
+│   │   │   └── domain/
+│   │   │       ├── providers.dart              # clone 相关 providers
+│   │   │       ├── pose_clone_service.dart     # ML Kit 静态图片骨骼检测
+│   │   │       └── clone_store.dart            # 克隆姿势本地持久化
+│   │   │
+│   │   ├── video_guide/                        # 运镜指导模块 (Phase 3)
+│   │   │   ├── presentation/
+│   │   │   │   ├── video_guide_page.dart        # 运镜手法浏览（9分类Grid）
+│   │   │   │   └── movement_detail_page.dart    # 运镜详情+拍摄提醒开关
+│   │   │   └── domain/
+│   │   │       ├── providers.dart               # 运镜相关 providers
+│   │   │       └── camera_movements.dart        # 30+ 运镜手法知识库
 │   │   │
 │   │   └── profile/                            # 用户模块
 │   │       └── presentation/
 │   │           └── profile_page.dart
 │   │
 │   └── shared/                                 # 共享层
+│       ├── widgets/
+│       │   ├── home_shell.dart                 # 4 标签首页（拍摄/姿势广场/景点/我的）
+│       │   └── section_label.dart              # 统一节标题组件（琥珀色左侧竖条）
 │       └── models/
 │           ├── pose.dart                       # Skeleton3D / Keypoint
 │           ├── recommendation.dart             # PoseRecommendation / CameraParams
 │           ├── scene_features.dart             # SceneFeatures / LightingInfo / SpatialInfo
 │           ├── preset.dart                     # Preset / PresetBundle / PresetAdjustments
 │           ├── evaluation.dart                 # EvaluationResult / DimensionScore
+│           ├── photo_spot.dart                 # PhotoSpot (景点机位，Haversine距离)
 │           └── user_profile.dart               # UserProfile / StylePreferences
 │
 ├── shaders/
@@ -271,6 +311,7 @@ src/flutter_app/
 │   ├── models/                                 # TFLite 模型 (.tflite 占位)
 │   ├── poses/                                  # 本地姿势库 JSON
 │   ├── presets/                                # 10个预设 (.cube + .json + _hald.png)
+│   ├── pois/                                   # 52个全国景点机位 JSON
 │   ├── images/
 │   └── fonts/
 │
@@ -319,11 +360,49 @@ cameraControllerProvider        — CameraController
 │
 ├── userPreferenceStoreProvider  — UserPreferenceStore (风格亲和度/喜欢/跳过持久化)
 │
-├── presetLoaderProvider        — PresetLoader (10预设)
-├── gpuLutEngineProvider        — GpuLutEngine (GPU Shader)
-├── activePresetProvider        — Preset? (当前选中预设)
-└── sliderOverridesProvider     — Map<String, double> (参数覆盖)
-    └── effectiveAdjustmentsProvider — Map<String, double> (合并值)
+├── bottomNavInsetProvider       — double (首页导航栏高度，CameraPage 底部填充)
+│
+├── poseSquareStoreProvider      — PoseSquareStore (姿势投票/收藏持久化)
+├── allPosesProvider             — List<LocalPose> (500 姿势去重列表)
+├── poseSquareFilterProvider     — PoseSquareFilter (体位/难度/风格筛选)
+│   └── filteredPosesProvider    — List<LocalPose> (筛选后的姿势)
+├── poseVoteProvider.family      — int (单姿势投票状态，-1/0/1)
+├── isPoseCollectedProvider.family — bool (单姿势收藏状态)
+├── collectedPosesProvider       — List<LocalPose> (已收藏姿势列表)
+│
+├── poiLoaderProvider            — PoiLoader (52 POI 加载+地区索引+附近搜索)
+├── allPoisProvider              — List<PhotoSpot> (全部景点)
+├── poiRegionsProvider           — List<String> (地区列表)
+├── poiRegionFilterProvider      — String? (当前地区筛选)
+│   └── filteredPoisProvider     — List<PhotoSpot> (筛选后的景点)
+├── nearbyPoisProvider.family    — List<PhotoSpot> (GPS 附近景点，按距离排序)
+├── selectedPoiProvider          — PhotoSpot? (当前选中景点)
+├── nearbyModeProvider           — bool (浏览/附近模式切换)
+├── userPositionProvider         — (double,double)? (GPS位置)
+├── userNearbyPoisProvider       — List<PhotoSpot> (用户附近100km机位)
+│
+├── poseCloneServiceProvider      — PoseCloneService (ML Kit 单图骨骼检测)
+├── cloneStoreProvider            — CloneStore (文件存储克隆姿势)
+├── clonedPosesProvider           — List<ClonedPoseEntry> (所有克隆姿势)
+├── cloneResultProvider           — CloneResult? (当前检测结果)
+├── isDetectingProvider           — bool (检测进行中)
+├── cloneTargetSkeletonProvider   — Skeleton3D? (AR复刻目标骨架)
+│
+├── presetLoaderProvider                — PresetLoader (10预设)
+├── gpuLutEngineProvider                — GpuLutEngine (GPU Shader)
+├── activePresetProvider                — Preset? (当前选中预设)
+├── sliderOverridesProvider             — Map<String, double> (参数覆盖)
+│   └── effectiveAdjustmentsProvider    — Map<String, double> (合并值)
+├── presetRecommendationServiceProvider — PresetRecommendationService (智能推荐)
+├── currentPresetRecommendationsProvider — List<PresetRecommendation> (当前推荐列表)
+├── localEvaluationEngineProvider       — LocalEvaluationEngine (四维评分)
+│
+├── activeMovementProvider              — CameraMovement? (运镜指导当前选中手法)
+├── showMovementOverlayProvider         — bool (运镜提示overlay显隐)
+├── allMovementsProvider                — List<CameraMovement> (全部30+运镜手法)
+├── movementCategoryFilterProvider      — String? (运镜分类筛选)
+├── filteredMovementsProvider           — List<CameraMovement> (筛选后运镜)
+└── movementCategoriesProvider          — List<String> (9个运镜分类)
 ```
 
 ---
@@ -350,86 +429,77 @@ cameraControllerProvider        — CameraController
 src/backend/
 ├── app/
 │   ├── main.py                    # FastAPI 入口
-│   ├── config.py                  # 配置管理
+│   ├── config.py                  # 配置管理（环境变量）
 │   │
-│   ├── api/                       # API 路由
-│   │   ├── v1/
-│   │   │   ├── router.py
-│   │   │   ├── recommend.py       # POST /api/v1/recommend
-│   │   │   ├── poses.py           # GET /api/v1/poses
-│   │   │   ├── evaluate.py        # POST /api/v1/evaluate
-│   │   │   ├── users.py           # 用户 CRUD
-│   │   │   └── health.py          # GET /health
-│   │   └── deps.py                # 依赖注入
+│   ├── api/                       # API 路由层
+│   │   ├── deps.py                # 依赖注入
+│   │   └── v1/
+│   │       ├── router.py          # 路由聚合（8 模块 19 端点）
+│   │       ├── health.py          # GET /api/v1/health
+│   │       ├── recommend.py       # POST /api/v1/recommend（核心）
+│   │       ├── poses.py           # GET /api/v1/poses, GET /api/v1/poses/{id}
+│   │       ├── evaluate.py        # POST /api/v1/evaluate
+│   │       ├── presets.py         # POST /api/v1/presets/recommend, GET /api/v1/presets
+│   │       ├── users.py           # 用户注册/偏好/会话
+│   │       ├── clone.py           # POST /api/v1/poses/clone（姿势克隆）
+│   │       └── pois.py            # GET /api/v1/poi/nearby（附近拍照点）
 │   │
-│   ├── domain/                    # 领域服务
+│   ├── domain/                    # 领域服务（规则引擎 + 业务逻辑）
 │   │   ├── recommendation/
-│   │   │   ├── engine.py          # 推荐引擎编排
-│   │   │   ├── retriever.py       # 向量检索
-│   │   │   ├── ranker.py          # 排序逻辑
-│   │   │   └── scorer.py          # 美学评分
-│   │   ├── scene/
-│   │   │   └── analyzer.py        # 云端场景深度分析
-│   │   ├── pose/
-│   │   │   ├── manager.py         # 姿势 CRUD
-│   │   │   └── generator.py       # AI 姿势生成
+│   │   │   └── engine.py          # 推荐引擎：场景映射 + 打分 + MMR 多样性重排
 │   │   ├── evaluation/
-│   │   │   └── evaluator.py       # 拍后评估
+│   │   │   └── service.py         # 5 维评估：姿势/构图/光影/画质/表现力
 │   │   └── user/
-│   │       └── profiler.py        # 用户画像更新
+│   │       └── service.py         # 用户 JSON 文件存储（Phase 1）
 │   │
-│   ├── infrastructure/            # 基础设施
-│   │   ├── db/
-│   │   │   ├── postgres.py
-│   │   │   └── milvus.py
-│   │   ├── cache/
-│   │   │   └── redis.py
-│   │   ├── storage/
-│   │   │   └── minio.py
+│   ├── infrastructure/            # 基础设施（客户端封装）
 │   │   └── llm/
-│   │       ├── qwen_client.py     # 通义千问 API
-│   │       ├── deepseek_client.py # DeepSeek API
-│   │       └── model_router.py    # 多模型路由/fallback
+│   │       └── model_router.py    # 多模型路由/stub（Qwen-VL / DeepSeek / GLM-4V）
 │   │
-│   ├── models/                    # 数据模型 (SQLAlchemy)
-│   │   ├── user.py
-│   │   ├── pose.py
-│   │   ├── recommendation_log.py
-│   │   └── poi.py
+│   ├── db/                        # 数据库
+│   │   └── session.py             # 异步 SQLAlchemy 引擎 + 会话工厂
 │   │
-│   └── schemas/                   # Pydantic 请求/响应 schema
-│       ├── recommend.py
-│       ├── pose.py
-│       └── user.py
+│   ├── models/                    # ORM 模型 (SQLAlchemy)
+│   │   ├── user.py                # 用户表
+│   │   ├── pose.py                # 姿势表
+│   │   ├── recommendation_log.py  # 推荐日志表
+│   │   └── poi.py                 # 拍照点表
+│   │
+│   └── schemas/                   # Pydantic 请求/响应 Schema
+│       ├── recommend.py           # RecommendRequest/Response, SceneFeaturesIn
+│       ├── evaluation.py          # EvaluationRequest/Response, PhotoFeatures
+│       ├── user.py                # UserCreate, UserPreferences, UserOut
+│       └── pose.py                # PoseListResponse, PoseDetailOut, PoseSummaryOut
 │
-├── workers/                       # Celery 异步任务
-│   ├── pose_pipeline.py           # 姿势数据管线
-│   ├── user_profile_updater.py    # 用户画像更新
-│   └── content_moderation.py      # 内容审核
-│
-├── migrations/                    # Alembic 数据库迁移
-├── tests/
+├── data/                          # 本地 JSON 数据（Phase 1 文件存储）
 ├── requirements.txt
 ├── Dockerfile
-└── docker-compose.yml
+└── docker-compose.yml             # PostgreSQL + Milvus + Redis + MinIO + etcd
 ```
 
-### 4.3 API 设计
+### 4.3 API 设计 (已实现)
 
-| 方法 | 路径 | 说明 | 调用频率 |
-|------|------|------|----------|
-| `POST` | `/api/v1/recommend` | 姿势推荐（核心接口，返回姿势+参数+服装+道具+预设） | 每 1-2 秒 |
-| `GET` | `/api/v1/poses/{pose_id}` | 获取单个姿势详情 | 按需 |
-| `GET` | `/api/v1/poses?scene=X&style=Y` | 姿势搜索/过滤 | 按需 |
-| `POST` | `/api/v1/evaluate` | 拍后照片评估 | 每张照片 |
-| `POST` | `/api/v1/presets/recommend` | 后期预设推荐（新增） | 每张照片 |
-| `GET` | `/api/v1/presets` | 获取预设列表 | 按需 |
-| `POST` | `/api/v1/feedback` | 推荐反馈（用户选择了哪个姿势/预设） | 每次选择 |
-| `GET` | `/api/v1/users/me` | 获取用户画像 | 启动时 |
-| `PATCH` | `/api/v1/users/me/preferences` | 更新偏好 | 按需 |
-| `GET` | `/api/v1/device/capability?model=X` | 查询设备相机能力（新增） | 启动时 |
-| `POST` | `/api/v1/poses/clone` | 姿势克隆（从照片提取姿势） | Phase 3 |
-| `GET` | `/api/v1/poi/nearby?lat=X&lng=Y` | 附近拍照点 | Phase 3 |
+| 方法 | 路径 | 说明 | 状态 |
+|------|------|------|------|
+| `POST` | `/api/v1/recommend` | 姿势推荐（核心接口，规则引擎 + MMR 多样性重排） | ✅ |
+| `GET` | `/api/v1/recommend/health` | 推荐引擎健康检查（姿势总数/场景分布） | ✅ |
+| `GET` | `/api/v1/poses` | 姿势搜索/过滤（scene/style/difficulty/category + 分页） | ✅ |
+| `GET` | `/api/v1/poses/{pose_id}` | 获取单个姿势详情（含骨骼/指导/相机参数） | ✅ |
+| `POST` | `/api/v1/poses/clone` | 姿势克隆（接收检测结果，返回相似库内姿势） | ✅ |
+| `GET` | `/api/v1/poses/clone/history` | 用户克隆历史 | ✅ |
+| `POST` | `/api/v1/evaluate` | 拍后照片评估（5维评分 + 改进建议 + 预设推荐） | ✅ |
+| `POST` | `/api/v1/presets/recommend` | 后期预设推荐（场景/光线/肤色/色温/风格匹配） | ✅ |
+| `GET` | `/api/v1/presets` | 获取预设列表（支持 scene/style 过滤） | ✅ |
+| `GET` | `/api/v1/presets/{preset_id}` | 获取单个预设详情 | ✅ |
+| `GET` | `/api/v1/presets/health` | 预设服务健康检查 | ✅ |
+| `GET` | `/api/v1/poi/nearby?lat=X&lon=Y` | 附近拍照点（Haversine 距离排序，20 个种子 POI） | ✅ |
+| `GET` | `/api/v1/poi/{poi_id}` | POI 详情 | ✅ |
+| `GET` | `/api/v1/poi` | POI 列表（支持 category/style 过滤） | ✅ |
+| `POST` | `/api/v1/users/register` | 用户注册 | ✅ |
+| `GET` | `/api/v1/users/me` | 获取用户画像 | ✅ |
+| `PATCH` | `/api/v1/users/me/preferences` | 更新偏好 | ✅ |
+| `POST` | `/api/v1/users/me/session` | 记录会话 | ✅ |
+| `GET` | `/api/v1/health` | 全局健康检查 | ✅ |
 
 ### 4.4 多模型编排策略
 
@@ -615,3 +685,74 @@ Collection: pose_vectors
 - [ ] 安全审计清单（数据加密、传输安全、存储安全）
 - [ ] CI/CD 流水线设计
 - [ ] Firebase/Google Play 上架准备清单
+
+---
+
+## 九、已知问题 (Known Issues)
+
+> ~~以下问题在 2026-05-26 Code Review 中发现，记录在此待后续修复。~~  
+> **全部已修复 (2026-05-26).** 以下保留修复记录供参考。
+
+### ✅ 9.1 CloneStore 将 base64 大图存入 SharedPreferences — 已修复
+- **修复**: `clone_store.dart` 重写为文件存储。缩略图写入 `{appDir}/cloned_poses/{id}.jpg`，SharedPreferences 仅存元数据+skeleton JSON（几 KB）。`addEntry` 参数从 `sourceImage: String` 改为 `imageBytes: Uint8List`。新增 `thumbBytes` getter 从磁盘读取并缓存。
+
+### ✅ 9.2 "开始AR复刻此姿势" 按钮是空占位符 — 已修复
+- **修复**: 新增 `cloneTargetSkeletonProvider` (StateProvider<Skeleton3D?>)。按钮点击时设置该 provider 为克隆的骨架。`ar_overlay.dart` 读取后在 CustomPainter 中以品红色渲染克隆骨架。右上角添加"克隆模式"标签+关闭按钮可退出。
+
+### ✅ 9.3 `_CloneEntryCard` 每次 rebuild 重复解码 base64 — 已修复
+- **修复**: `ClonedPoseEntry` 新增 `thumbBytes` getter，首次访问时从文件读取并缓存到 `_cachedThumb` 字段。`_CloneEntryCard` 改为使用 `entry.thumbBytes`。
+
+### ✅ 9.4 `_SkeletonOverlay.skeleton` 使用 `dynamic` 类型 — 已修复
+- **修复**: `_SkeletonOverlay.skeleton` 改为 `final Skeleton3D skeleton`，`_SkeletonPainter.keypoints` 改为 `final List<Keypoint> keypoints`。新增显式 `import 'pose.dart'`。
+
+### ✅ 9.5 未使用的 import — 已修复
+- `pose_clone_service.dart`: 移除 `dart:convert`
+- `providers.dart` (clone): 移除 `pose.dart`（后续因 9.2 需要 `Skeleton3D` 又重新添加）
+- `clone_page.dart`: 移除 `dart:convert`、`dart:typed_data`
+- `clone_result_page.dart`: 移除 `dart:convert`
+
+### ✅ 9.6 `_SectionLabel` widget 重复定义 — 已修复
+- **修复**: 抽取到 `lib/shared/widgets/section_label.dart`。`poi_detail_page.dart` 和 `clone_result_page.dart` 改为 `import` 共享组件，删除私有 `_SectionLabel` 类。
+
+### ✅ 9.7 camera_page.dart 中 `recommendedPresetId` 局部变量未使用 — 已修复
+- **修复**: 移除该变量计算代码。
+
+### 🟢 新发现 Minor（待修）
+
+#### 9.8 `_selectedRecIndexProvider` is a file-level global
+- **文件**: `lib/features/evaluation/presentation/widgets/evaluation_result_sheet.dart:330`
+- **问题**: 文件级 `StateProvider`，跨弹窗状态需手动在 `show()` 中重置（已实现）。如未来多处使用此 widget 需注意。
+
+---
+
+## 十、后端 Code Review 修复记录
+
+> 在 2026-05-26 对后端 8 个模块的 Code Review 中发现并修复了以下问题。
+
+### ✅ 10.1 `radius_km` 默认值 3000 不合理 — 已修复
+- **文件**: `app/api/v1/pois.py`
+- **修复**: 默认搜索半径从 `3000.0` 改为 `50.0` km。
+
+### ✅ 10.2 `_bbox_ar` 在 for 循环内重复定义 — 已修复
+- **文件**: `app/api/v1/clone.py`
+- **修复**: 将 `_bbox_ar` 函数提到 `_find_similar_poses` 外部，并将 `_bbox_ar(keypoints)` 调用提到循环外避免重复计算。
+
+### ✅ 10.3 直接访问私有属性 `engine._all_poses` — 已修复
+- **文件**: `app/api/v1/poses.py`, `app/api/v1/clone.py`
+- **修复**: 在 `engine.py` 新增 `all_poses` 公共 property，两处调用改为 `engine.all_poses`。
+
+### ✅ 10.4 `pois.py` 行内 import — 已修复
+- **文件**: `app/api/v1/pois.py`
+- **修复**: `from fastapi import HTTPException` 从 `get_poi_detail` 函数体移到文件顶部。
+
+### ✅ 10.5 `recommend.py` Pydantic v1 兼容死代码 — 已修复
+- **文件**: `app/api/v1/recommend.py`
+- **修复**: 移除 `hasattr(request.scene_features, "model_dump")` 的 `.dict()` fallback，直接调用 `model_dump()`。
+
+### ✅ 10.6 `get_db()` 返回类型标注错误 — 已修复
+- **文件**: `app/db/session.py`
+- **修复**: 返回类型从 `AsyncSession` 改为 `AsyncGenerator[AsyncSession, None]`。
+
+### ✅ 10.7 多个端点缺少 `response_model` — 已修复
+- **文件**: `app/api/v1/poses.py`, `app/api/v1/pois.py`
+- **修复**: 新增 `schemas/pose.py` (PoseListResponse, PoseDetailOut, PoseSummaryOut)；`pois.py` 新增 NearbyPOIResponse, POIListResponse。4 个端点添加 `response_model` 装饰器。

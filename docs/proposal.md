@@ -1,6 +1,6 @@
 # Proposal: 智能拍照姿势与角度推荐系统
 
-> 版本: v1.4 | 日期: 2026-05-26 | 状态: Phase 2 全部完成，进入 Phase 3
+> 版本: v1.10 | 日期: 2026-05-26 | 状态: Phase 2 & Phase 3 全部完成，后端已实现 + Code Review 修复
 
 ---
 
@@ -175,17 +175,22 @@
 | 场景扩展至 127 细粒度分类 | ✅ 完成 | `scene_taxonomy.dart` + `scene_analyzer.dart` + `hybrid_scene_analyzer.dart` |
 | 多人姿势（双人/闺蜜/家庭，5人骨架检测） | ✅ 完成 | `pose_detector.dart` + `person_count_selector.dart` + `ar_overlay.dart` |
 | 个性化推荐（喜欢/跳过反馈 + 风格亲和度 + 偏好持久化） | ✅ 完成 | `user_preference_store.dart` + `recommendation_panel.dart` + `profile_page.dart` |
+| 姿势广场（500 姿势浏览/筛选/收藏/投票） | ✅ 完成 | `pose_square_page.dart` + `pose_detail_page.dart` + `pose_square_store.dart` |
+| POI 景点机位数据库（52 个全国景点+GPS+最佳机位+推荐姿势） | ✅ 完成 | `photo_spot.dart` + `china_pois.json` + `poi_loader.dart` + `discovery_page.dart` + `poi_detail_page.dart` |
+| 姿势克隆（相册选图→ML Kit骨骼提取→AR复刻入口） | ✅ 完成 | `pose_clone_service.dart` + `clone_store.dart` + `clone_page.dart` + `clone_result_page.dart` |
+| 短视频运镜指导（30+手法9分类+拍摄时文字提醒Overlay） | ✅ 完成 | `camera_movements.dart` + `video_guide_page.dart` + `movement_detail_page.dart` + `movement_guide_overlay.dart` |
+| 地图发现（GPS定位+附近机位+距离/方向指示） | ✅ 完成 | `discovery_page.dart` (附近模式) + `providers.dart` (GPS+轴承计算) |
+| 后期调色建议（智能匹配场景/光线/风格，Top 3 推荐+中文推荐理由） | ✅ 完成 | `preset_recommendation_service.dart` + `evaluation_result_sheet.dart` |
+| 云端后端（FastAPI 19 端点：推荐/评估/预设/姿势/克隆/POI/用户，ORM 模型，Docker Compose） | ✅ 完成 | `src/backend/` |
 
 ### Phase 3 — 社区 + 商业化（预计 4-6 个月）
 
-- 姿势广场（UGC 上传 + 投票）
-- POI 景点机位数据库
-- 姿势克隆（照片→骨骼提取→AR 复刻）
-- Pro 订阅 + 风格包购买
-- KOL 合作姿势包
-- 短视频运镜指导
-- 地图发现（附近最佳拍照点）
-- 后期调色建议
+- 姿势广场（浏览/筛选/收藏/投票）✅
+- POI 景点机位数据库 ✅
+- 姿势克隆（照片→骨骼提取→AR 复刻）✅
+- 短视频运镜指导 ✅
+- 地图发现（附近最佳拍照点）✅
+- 后期调色建议（智能场景+光线+风格匹配 Top 3 推荐+理由）✅
 
 ---
 
