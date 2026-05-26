@@ -30,9 +30,6 @@ class SceneDef {
   /// Months when this scene is most likely (1-12, empty = any)
   final List<int> peakMonths;
 
-  /// Whether this is an outdoor scene
-  final bool isOutdoor;
-
   const SceneDef({
     required this.id,
     required this.label,
@@ -41,7 +38,6 @@ class SceneDef {
     this.timeOfDay = const [],
     this.tfliteClass = 'outdoor-nature',
     this.peakMonths = const [],
-    this.isOutdoor = true,
   });
 }
 

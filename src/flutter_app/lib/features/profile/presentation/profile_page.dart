@@ -42,22 +42,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   String _level = 'beginner';
   String _gender = 'unspecified';
   String _skinTone = 'medium';
+  bool _initializedFromStore = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadFromStore();
-  }
-
-  void _loadFromStore() {
+  void _ensureLoadedFromStore() {
+    if (_initializedFromStore) return;
     final store = ref.read(userPreferenceStoreProvider);
     if (!store.isLoaded) return;
-    setState(() {
-      _selectedStyles
-        ..clear()
-        ..addAll(store.preferredStyles);
-      _difficulty = store.preferredDifficulty;
-    });
+    _selectedStyles
+      ..clear()
+      ..addAll(store.preferredStyles);
+    _difficulty = store.preferredDifficulty;
+    _initializedFromStore = true;
   }
 
   @override
@@ -107,6 +102,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    _ensureLoadedFromStore();
     return Scaffold(
       backgroundColor: const Color(0xFF0D0D0D),
       appBar: AppBar(

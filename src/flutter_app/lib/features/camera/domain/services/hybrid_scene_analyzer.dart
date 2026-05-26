@@ -83,14 +83,9 @@ class HybridSceneAnalyzer {
       );
     }
 
-    // Build TFLite hints for the rule analyzer
-    final tfliteClass = tfResult?.primaryLabel;
-    final tfliteTop3 = tfResult?.top3.map((t) => t.label).join(',');
-
     final ruleResult = _ruleAnalyzer.analyze(
       now: now,
-      tfliteClass: tfliteClass,
-      tfliteTop3Joined: tfliteTop3,
+      tfliteClass: tfResult?.primaryLabel,
     );
 
     // Run depth estimation if model is available

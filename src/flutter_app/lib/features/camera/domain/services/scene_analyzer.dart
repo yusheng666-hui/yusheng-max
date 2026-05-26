@@ -65,7 +65,6 @@ class SceneAnalyzer {
     double? latitude,
     double? longitude,
     String? tfliteClass,
-    String? tfliteTop3Joined,
   }) {
     final hour = now.hour;
     final month = now.month;
