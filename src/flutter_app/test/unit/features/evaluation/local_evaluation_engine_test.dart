@@ -45,6 +45,17 @@ void main() {
         tips: const [],
       );
 
+  LightingInfo tempBacklightInfo() {
+    return const LightingInfo(
+      direction: [0.5, 0.3, 0.8],
+      intensity: 0.4,
+      colorTemp: 5000,
+      contrastRatio: 3.0,
+      isBacklit: true,
+      backlightSeverity: 0.7,
+    );
+  }
+
   LightingAnalysisResult backlight() {
     final tips = ['逆光拍摄，下次试试换个角度或打开闪光灯'];
     return LightingAnalysisResult(
@@ -58,17 +69,6 @@ void main() {
         peripheryMean: 220,
       ),
       tips: tips,
-    );
-  }
-
-  LightingInfo tempBacklightInfo() {
-    return const LightingInfo(
-      direction: [0.5, 0.3, 0.8],
-      intensity: 0.4,
-      colorTemp: 5000,
-      contrastRatio: 3.0,
-      isBacklit: true,
-      backlightSeverity: 0.7,
     );
   }
 

@@ -31,7 +31,7 @@ import '../../evaluation/presentation/review_edit_page.dart';
 import '../../evaluation/presentation/widgets/evaluation_result_sheet.dart';
 import '../../evaluation/domain/providers.dart';
 
-const _uuid = Uuid();
+final _uuid = Uuid();
 
 /// Main camera page — the core UX of PoseCraft.
 ///
