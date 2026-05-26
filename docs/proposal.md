@@ -1,6 +1,6 @@
 # Proposal: 智能拍照姿势与角度推荐系统
 
-> 版本: v1.3 | 日期: 2026-05-26 | 状态: Phase 2 核心功能完成（TTS/表情/光线/拍后评估已集成）
+> 版本: v1.4 | 日期: 2026-05-26 | 状态: Phase 2 全部完成，进入 Phase 3
 
 ---
 
@@ -159,7 +159,7 @@
 
 | 功能 | 状态 | 实现文件 |
 |------|------|----------|
-| 姿势库（300 个，含场景/风格/难度标签） | ✅ 完成 | `local_pose_db.json` (4.5MB) |
+| 姿势库（500 个，含场景/风格/难度标签） | ✅ 完成 | `local_pose_db.json` |
 | 相机参数双层指导（小白+进阶+姿势联动） | ✅ 完成 | `camera_params_service.dart` |
 | 服装道具推荐面板 | ✅ 完成 | `styling_card.dart` + `styling_service.dart` |
 | 摄影师构图引导 | ✅ 完成 | `photographer_guide_bar.dart` + `photographer_guidance_service.dart` |
@@ -172,9 +172,9 @@
 | 光线完整分析（光质/逆光/方向检测） | ✅ 完成 | `lighting_analyzer.dart` |
 | 拍后分析（四维评分+改进建议+鼓励语） | ✅ 完成 | `local_evaluation_engine.dart` + `evaluation_result_sheet.dart` |
 | 表情引导（ML Kit 6分类+文字叠加+TTS） | ✅ 完成 | `expression_detector.dart` + `expression_guide_overlay.dart` |
-| 场景扩展至 100+ 细粒度分类 | ⏳ 待实现 | 需云端 LLM 细粒度识别 |
-| 多人姿势（双人/闺蜜/家庭） | ⏳ 待实现 | 代码有框架，无多人检测逻辑 |
-| 个性化推荐（基于历史动态画像） | ⏳ 待实现 | 用户画像仅 UI 占位 |
+| 场景扩展至 127 细粒度分类 | ✅ 完成 | `scene_taxonomy.dart` + `scene_analyzer.dart` + `hybrid_scene_analyzer.dart` |
+| 多人姿势（双人/闺蜜/家庭，5人骨架检测） | ✅ 完成 | `pose_detector.dart` + `person_count_selector.dart` + `ar_overlay.dart` |
+| 个性化推荐（喜欢/跳过反馈 + 风格亲和度 + 偏好持久化） | ✅ 完成 | `user_preference_store.dart` + `recommendation_panel.dart` + `profile_page.dart` |
 
 ### Phase 3 — 社区 + 商业化（预计 4-6 个月）
 

@@ -1,6 +1,6 @@
 # 技术架构设计 (Architecture Design)
 
-> 版本: v1.3 | 日期: 2026-05-26 | 状态: Phase 2 核心功能完成（TTS/光线/表情/拍后评估已集成）
+> 版本: v1.4 | 日期: 2026-05-26 | 状态: Phase 2 全部完成，进入 Phase 3
 
 ---
 
@@ -191,6 +191,8 @@ src/flutter_app/
 │   │   ├── api_client.dart                     # Dio HTTP 客户端
 │   │   ├── connectivity_checker.dart           # 在线/离线检测
 │   │   ├── tts_service.dart                    # TTS 语音引导（防抖/静音/分场景）
+│   │   ├── user_preference_store.dart          # 用户偏好本地持久化（风格亲和度/喜欢/跳过）
+│   │   ├── scene_taxonomy.dart                 # 127 场景细粒度分类知识库
 │   │   └── constants.dart                      # API/MlModels/StorageKeys 常量
 │   │
 │   ├── features/                               # 功能模块 (feature-first)
@@ -204,6 +206,7 @@ src/flutter_app/
 │   │   │   │       ├── camera_params_card.dart # 参数建议卡片 (右)
 │   │   │   │       ├── styling_card.dart       # 服装道具卡片 (左)
 │   │   │   │       ├── photographer_guide_bar.dart  # 构图引导栏
+│   │   │   │       ├── person_count_selector.dart   # 人数模式选择器（单人/双人/闺蜜/家庭）
 │   │   │   │       └── expression_guide_overlay.dart # 表情引导文字叠加
 │   │   │   └── domain/
 │   │   │       ├── providers.dart              # 所有 Riverpod providers
@@ -279,15 +282,18 @@ src/flutter_app/
 
 ```
 cameraControllerProvider        — CameraController
-├── detectedPoseProvider        — DetectedPose? (MediaPipe 33点)
-├── sceneAnalysisResultProvider — SceneAnalysisResult? (规则/TFLite)
+├── detectedPosesProvider        — List<DetectedPose> (MediaPipe 33点，最多5人)
+├── detectedPersonCountProvider  — int (检测到的实际人数)
+├── personCountModeProvider      — PersonCountMode (solo/couple/friends/family)
+├── sceneAnalysisResultProvider  — SceneAnalysisResult? (规则/TFLite + 127场景分类)
 │   └── hybridSceneAnalyzerProvider — HybridSceneAnalyzer (TFLite+规则混合)
-│       └── richSceneResultProvider  — RichSceneResult? (含深度+光照)
+│       └── richSceneResultProvider  — RichSceneResult? (含fineSceneId+深度+光照)
 │
 ├── currentRecommendationsProvider — RecommendationResponse?
 │   ├── activeRecommendationIndexProvider — int
 │   ├── recommendationServiceProvider   — RecommendationService
 │   ├── localEngineProvider             — LocalRecommendationEngine (离线)
+│   ├── recommendationRefreshTriggerProvider — int (跳过姿势后触发刷新)
 │   └── cameraParamsRecommendationProvider — CameraParamsRecommendation? (姿势联动)
 │
 ├── stylingServiceProvider      — StylingService
@@ -309,7 +315,9 @@ cameraControllerProvider        — CameraController
 ├── ttsServiceProvider           — TtsService (防抖语音引导)
 ├── ttsMutedProvider             — bool (静音状态)
 │
-├── alignmentResultProvider      — AlignmentResult? (共享对齐评分)
+├── alignmentResultProvider      — AlignmentResult? (共享对齐评分，取primary人物)
+│
+├── userPreferenceStoreProvider  — UserPreferenceStore (风格亲和度/喜欢/跳过持久化)
 │
 ├── presetLoaderProvider        — PresetLoader (10预设)
 ├── gpuLutEngineProvider        — GpuLutEngine (GPU Shader)
