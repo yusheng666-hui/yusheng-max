@@ -108,4 +108,12 @@ class LocalPoseLoader {
   List<LocalPose> getPosesForScene(String sceneKey) {
     return _posesByScene?[sceneKey] ?? _posesByScene?['outdoor'] ?? [];
   }
+
+  /// Look up a single pose by its ID.
+  LocalPose? getPoseById(String poseId) {
+    for (final pose in _allPoses ?? <LocalPose>[]) {
+      if (pose.poseId == poseId) return pose;
+    }
+    return null;
+  }
 }

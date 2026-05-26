@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api_client.dart';
 import '../../../core/connectivity_checker.dart';
 import '../../../core/tts_service.dart';
+import '../../../core/user_preference_store.dart';
 import '../domain/services/pose_detector.dart';
 import '../domain/services/scene_analyzer.dart';
 import '../domain/services/hybrid_scene_analyzer.dart';
@@ -59,6 +60,9 @@ final detectedPersonCountProvider = Provider<int>((ref) {
 
 /// User-selected person-count mode.
 final personCountModeProvider = StateProvider<PersonCountMode>((ref) => PersonCountMode.solo);
+
+/// Triggers recommendation refresh when incremented.
+final recommendationRefreshTriggerProvider = StateProvider<int>((ref) => 0);
 
 /// Whether the pose detector is currently processing a frame.
 final isPoseDetectingProvider = StateProvider<bool>((ref) => false);
@@ -331,6 +335,13 @@ final alignmentResultProvider = Provider<AlignmentResult?>((ref) {
     userKeypoints: userKps,
     targetKeypoints: targetKps,
   );
+});
+
+// ── Preferences ─────────────────────────────────────────────────
+
+/// Local preference store for personalized recommendations.
+final userPreferenceStoreProvider = Provider<UserPreferenceStore>((ref) {
+  return UserPreferenceStore();
 });
 
 // ── Connectivity & Offline ───────────────────────────────────────

@@ -17,6 +17,7 @@ class PoseRecommendation extends Equatable {
   final String? lightingTip;
   final String? referenceImageUrl;
   final CameraParams? cameraParams;
+  final List<String> styles;
 
   const PoseRecommendation({
     required this.poseId,
@@ -33,6 +34,7 @@ class PoseRecommendation extends Equatable {
     this.lightingTip,
     this.referenceImageUrl,
     this.cameraParams,
+    this.styles = const [],
   });
 
   factory PoseRecommendation.fromJson(Map<String, dynamic> json) {
@@ -76,11 +78,15 @@ class PoseRecommendation extends Equatable {
       lightingTip: json['lighting_tip'] as String?,
       referenceImageUrl: json['reference_image_url'] as String?,
       cameraParams: camParams,
+      styles: (json['styles'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 
   @override
-  List<Object?> get props => [poseId, rank, score];
+  List<Object?> get props => [poseId, rank, score, styles];
 }
 
 /// Camera parameters for beginner and advanced modes.

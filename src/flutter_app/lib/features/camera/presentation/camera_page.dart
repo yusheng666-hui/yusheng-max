@@ -100,6 +100,14 @@ class _CameraPageState extends ConsumerState<CameraPage>
     _startSceneAnalysisLoop();
     _fetchRecommendations(); // initial fetch
 
+    // Load preferences + sync to recommendation service
+    final prefs = ref.read(userPreferenceStoreProvider);
+    await prefs.load();
+    ref.read(recommendationServiceProvider)
+      ..setPreferredStyles(prefs.preferredStyles)
+      ..setPreferredDifficulty(prefs.preferredDifficulty);
+    prefs.recordSession();
+
     // Initialize TTS
     final tts = ref.read(ttsServiceProvider);
     tts.init();
@@ -327,17 +335,27 @@ class _CameraPageState extends ConsumerState<CameraPage>
     try {
       final engine = ref.read(localEngineProvider);
       final service = ref.read(recommendationServiceProvider);
+      final store = ref.read(userPreferenceStoreProvider);
       final mode = ref.read(personCountModeProvider);
       // Map mode to category — null for solo (shows all solo/expression/advanced_solo)
       final category = mode == PersonCountMode.solo ? null : mode.name;
 
+      // Merge style affinity into preferred styles for personalization
+      final baseStyles = store.preferredStyles;
+      final boostedStyles = <String>[...baseStyles];
+      for (final style in store.styleAffinity.keys) {
+        if (store.affinityFor(style) >= 3 && !boostedStyles.contains(style)) {
+          boostedStyles.add(style);
+        }
+      }
+
       final response = engine.recommend(
         sceneClass: sceneClass,
-        preferredStyles: List<String>.from(
-            (service.userContext['preferred_styles'] as List<dynamic>?) ?? []),
-        preferredDifficulty:
-            service.userContext['preferred_difficulty'] as String? ?? 'beginner',
+        preferredStyles: boostedStyles,
+        preferredDifficulty: store.preferredDifficulty,
         category: category,
+        likedPoseIds: store.likedPoseIds,
+        skipPoseIds: store.skippedPoseIds,
       );
 
       service.updateResponse(response);
@@ -373,6 +391,18 @@ class _CameraPageState extends ConsumerState<CameraPage>
       if (presetLoader.isLoaded) {
         final recs = presetLoader.getForScene(sceneClass, limit: 1);
         if (recs.isNotEmpty) recommendedPresetId = recs.first.presetId;
+      }
+
+      // Record photo capture for personalization
+      final activeRec = ref.read(currentRecommendationsProvider)?.recommendations
+          .elementAtOrNull(ref.read(activeRecommendationIndexProvider));
+      if (activeRec != null) {
+        final loader = ref.read(localPoseLoaderProvider).valueOrNull;
+        final localPose = loader?.getPoseById(activeRec.poseId);
+        ref.read(userPreferenceStoreProvider).recordPhotoTaken(
+          activeRec.poseId,
+          localPose?.style ?? [],
+        );
       }
 
       // Snapshot current expression
@@ -515,6 +545,13 @@ class _CameraPageState extends ConsumerState<CameraPage>
 
     // Re-fetch recommendations when person-count mode changes
     ref.listen(personCountModeProvider, (prev, next) {
+      if (prev != next) {
+        _fetchRecommendations();
+      }
+    });
+
+    // Re-fetch when recommendation panel requests refresh (like/skip)
+    ref.listen(recommendationRefreshTriggerProvider, (prev, next) {
       if (prev != next) {
         _fetchRecommendations();
       }

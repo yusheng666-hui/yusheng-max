@@ -211,6 +211,7 @@ class LocalRecommendationEngine {
           [],
       standingPosition: [0.0, 2.0, 0.0],
       cameraParams: CameraParams.fromJson(cam),
+      styles: sp.pose.style,
     );
   }
 }
