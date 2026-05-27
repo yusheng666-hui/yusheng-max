@@ -33,6 +33,7 @@ build-apk:
 	sed -i '/targetSdk/s/flutter\.targetSdkVersion/35/' android/app/build.gradle && \
 	sed -i 's|id "com.android.application" version "[^"]*"|id "com.android.application" version "8.1.0"|' android/settings.gradle && \
 	sed -i 's|id "org.jetbrains.kotlin.android" version "[^"]*"|id "org.jetbrains.kotlin.android" version "1.9.10"|' android/settings.gradle && \
+	sed -i "s/ext.kotlin_version = '[^']*'/ext.kotlin_version = '1.9.10'/" android/build.gradle || true && \
 	sed -i 's|gradle-[0-9.]*-all.zip|gradle-8.3-all.zip|' android/gradle/wrapper/gradle-wrapper.properties && \
 	flutter build apk --debug
 
