@@ -29,7 +29,7 @@ test-python:
 build-apk:
 	cd src/flutter_app && flutter create --platforms=android . && \
 	sed -i '/compileSdk/s/flutter\.compileSdkVersion/35/' android/app/build.gradle && \
-	sed -i '/minSdk/s/flutter\.minSdkVersion/21/' android/app/build.gradle && \
+	sed -i '/minSdk/s/flutter\.minSdkVersion/26/' android/app/build.gradle && \
 	sed -i '/targetSdk/s/flutter\.targetSdkVersion/35/' android/app/build.gradle && \
 	sed -i 's|id "com.android.application" version "[^"]*"|id "com.android.application" version "8.1.0"|' android/settings.gradle && \
 	sed -i 's|gradle-[0-9.]*-all.zip|gradle-8.3-all.zip|' android/gradle/wrapper/gradle-wrapper.properties && \
