@@ -160,7 +160,6 @@ class HaldClutEngine {
   bool isLoaded(String presetId) => _cache.containsKey(presetId);
 
   void dispose() {
-    _disposed = true;
     _cache.clear();
   }
 }

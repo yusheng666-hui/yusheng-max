@@ -180,8 +180,10 @@ void main() {
         topK: 3,
       );
 
-      // outdoor poses are all 'solo', so couple filter should yield empty
-      expect(results.recommendations, isEmpty);
+      // outdoor poses are all 'solo', but scene expansion pulls from
+      // adjacent scenes — ind-1 (indoor/couple) is the only match
+      expect(results.recommendations, isNotEmpty);
+      expect(results.recommendations.first.poseId, 'ind-1');
     });
 
     test('style preference boosts matching poses', () {
@@ -270,7 +272,12 @@ void main() {
       final response = engine.recommend(sceneClass: 'urban-street', topK: 3);
 
       expect(response.recommendations, isNotEmpty);
-      expect(response.recommendations.first.poseId, startsWith('str-'));
+      // street scene has only 1 pose; scene expansion may pull outdoor
+      // poses that out-rank it, but str-1 should be in the results
+      expect(
+        response.recommendations.any((r) => r.poseId.startsWith('str-')),
+        isTrue,
+      );
     });
 
     test('isReady delegates to loader', () {
