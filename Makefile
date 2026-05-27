@@ -31,6 +31,7 @@ build-apk:
 	sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 35/' android/app/build.gradle && \
 	sed -i 's/targetSdk = flutter.targetSdkVersion/targetSdk = 35/' android/app/build.gradle && \
 	sed -i 's|id "com.android.application" version "[^"]*"|id "com.android.application" version "8.1.0"|' android/settings.gradle && \
+	sed -i 's|gradle-[0-9.]*-all.zip|gradle-8.3-all.zip|' android/gradle/wrapper/gradle-wrapper.properties && \
 	flutter build apk --debug
 
 clean:
