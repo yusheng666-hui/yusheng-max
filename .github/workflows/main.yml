@@ -81,6 +81,10 @@ jobs:
           channel: stable
       - run: flutter pub get
       - run: flutter create --platforms=android .
+      - run: |
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 35/' android/app/build.gradle
+          sed -i 's/targetSdk = flutter.targetSdkVersion/targetSdk = 35/' android/app/build.gradle
+          sed -i 's|id "com.android.application" version "[^"]*"|id "com.android.application" version "8.1.0"|' android/settings.gradle
       - run: flutter build apk --debug
       - uses: actions/upload-artifact@v4
         with:

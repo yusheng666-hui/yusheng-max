@@ -27,7 +27,11 @@ test-python:
 	cd src/backend && pytest
 
 build-apk:
-	cd src/flutter_app && flutter create --platforms=android . && flutter build apk --debug
+	cd src/flutter_app && flutter create --platforms=android . && \
+	sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 35/' android/app/build.gradle && \
+	sed -i 's/targetSdk = flutter.targetSdkVersion/targetSdk = 35/' android/app/build.gradle && \
+	sed -i 's|id "com.android.application" version "[^"]*"|id "com.android.application" version "8.1.0"|' android/settings.gradle && \
+	flutter build apk --debug
 
 clean:
 	cd src/flutter_app && flutter clean
