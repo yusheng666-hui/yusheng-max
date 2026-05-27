@@ -27,7 +27,7 @@ test-python:
 	cd src/backend && pytest
 
 build-apk:
-	cd src/flutter_app && flutter build apk --debug
+	cd src/flutter_app && flutter create --platforms=android . && flutter build apk --debug
 
 clean:
 	cd src/flutter_app && flutter clean
