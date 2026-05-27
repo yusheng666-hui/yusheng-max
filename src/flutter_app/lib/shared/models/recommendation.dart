@@ -1,6 +1,13 @@
 import 'package:equatable/equatable.dart';
 import 'pose.dart';
 
+/// Safely convert a dynamic value to Map<String, dynamic>.
+Map<String, dynamic> _safeMap(dynamic v) {
+  if (v == null) return {};
+  if (v is Map<String, dynamic>) return v;
+  return (v as Map).cast<String, dynamic>();
+}
+
 /// A single pose recommendation returned from the cloud engine.
 class PoseRecommendation extends Equatable {
   final String poseId;
@@ -38,7 +45,7 @@ class PoseRecommendation extends Equatable {
   });
 
   factory PoseRecommendation.fromJson(Map<String, dynamic> json) {
-    final skData = json['skeleton_3d'] as Map<String, dynamic>? ?? {};
+    final skData = _safeMap(json['skeleton_3d']);
     final kpList = (skData['keypoints'] as List<dynamic>?)
             ?.map((k) => Keypoint(
                   id: (k['id'] as num?)?.toInt() ?? 0,
@@ -53,7 +60,7 @@ class PoseRecommendation extends Equatable {
 
     CameraParams? camParams;
     if (json['camera_params'] != null) {
-      camParams = CameraParams.fromJson(json['camera_params'] as Map<String, dynamic>);
+      camParams = CameraParams.fromJson(_safeMap(json['camera_params']));
     }
 
     return PoseRecommendation(
@@ -103,8 +110,8 @@ class CameraParams extends Equatable {
 
   factory CameraParams.fromJson(Map<String, dynamic> json) {
     return CameraParams(
-      beginner: json['beginner'] as Map<String, dynamic>? ?? {},
-      advanced: json['advanced'] as Map<String, dynamic>? ?? {},
+      beginner: _safeMap(json['beginner']),
+      advanced: _safeMap(json['advanced']),
       rationale: json['rationale'] as String?,
     );
   }

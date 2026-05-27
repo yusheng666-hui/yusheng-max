@@ -190,13 +190,24 @@ class LocalRecommendationEngine {
     );
   }
 
+  /// Safely convert a dynamic value to Map<String, dynamic>.
+  /// Handles both Map<String, dynamic> and Map<dynamic, dynamic> from
+  /// json.decode / literal constructors, which are not subtypes of each other.
+  static Map<String, dynamic> _safeMap(dynamic v) {
+    if (v == null) return {};
+    if (v is Map<String, dynamic>) return v;
+    return (v as Map).cast<String, dynamic>();
+  }
+
   /// Convert a scored local pose to a [PoseRecommendation].
   PoseRecommendation _toPoseRecommendation(_ScoredPose sp, int rank) {
     final raw = sp.pose.raw;
-    final skData = raw['skeleton_3d'] as Map<String, dynamic>? ?? {};
-    final guidance = raw['guidance'] as Map<String, dynamic>? ?? {};
-    final cam = raw['camera_params'] as Map<String, dynamic>? ?? {};
-    final name = raw['name'] as Map<String, dynamic>? ?? {};
+    final skData = _safeMap(raw['skeleton_3d']);
+    final guidance = _safeMap(raw['guidance']);
+    final cam = _safeMap(raw['camera_params']);
+    final name = _safeMap(raw['name']);
+    final desc = _safeMap(raw['description']);
+    final photographerTips = _safeMap(guidance['photographer_tips']);
 
     final kpList = (skData['keypoints'] as List<dynamic>?)
             ?.map((k) => Keypoint(
@@ -215,12 +226,12 @@ class LocalRecommendationEngine {
       rank: rank,
       score: double.parse(sp.score.toStringAsFixed(1)),
       name: name['zh'] as String? ?? sp.pose.poseId,
-      description: (raw['description'] as Map<String, dynamic>? ?? {})['zh'] as String? ?? '',
+      description: desc['zh'] as String? ?? '',
       skeleton: Skeleton3D(
         keypoints: kpList,
         anchorPoint: skData['anchor_point'] as String? ?? 'mid_hip',
       ),
-      guidanceText: (guidance['photographer_tips'] as Map<String, dynamic>? ?? {})['zh'] as String? ?? '',
+      guidanceText: photographerTips['zh'] as String? ?? '',
       voiceGuidance: (guidance['voice_guidance'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??

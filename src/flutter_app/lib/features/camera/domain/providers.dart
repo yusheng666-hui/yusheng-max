@@ -1,6 +1,5 @@
 /// Riverpod providers for camera, pose detection, scene analysis, and recommendations.
 
-import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -168,7 +167,6 @@ final stylingServiceProvider = Provider<StylingService>((ref) {
 /// Current styling recommendation (updated when scene changes).
 final stylingRecommendationProvider = Provider<StylingRecommendation?>((ref) {
   final sceneResult = ref.watch(sceneAnalysisResultProvider);
-  final response = ref.watch(currentRecommendationsProvider);
   final service = ref.watch(stylingServiceProvider);
 
   if (sceneResult == null) return null;

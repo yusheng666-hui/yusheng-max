@@ -55,7 +55,6 @@ class _PoseDetailPageState extends ConsumerState<PoseDetailPage> {
     final sceneTypes = (taxonomy['scene_type'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
     final popScore = (metadata['popularity_score'] as num?)?.toDouble() ?? 0;
     final qualityScore = (metadata['quality_score'] as num?)?.toDouble() ?? 0;
-    final tags = (metadata['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
     final kpCount = (skData['keypoints'] as List<dynamic>?)?.length ?? 33;
 
     final modelTips = _extractZh(guidance, 'model_tips') ?? '';

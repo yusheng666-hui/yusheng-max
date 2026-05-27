@@ -3,7 +3,6 @@
 /// Handles recommendation requests, user profile, and evaluation endpoints.
 /// Uses [Dio] for HTTP with configurable base URL and timeouts.
 
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../features/recommendation/domain/services/recommendation_service.dart';
 import '../shared/models/scene_features.dart';

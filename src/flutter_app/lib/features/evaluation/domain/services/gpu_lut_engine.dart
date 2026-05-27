@@ -9,7 +9,6 @@
 /// targets real-time preview at up to 1080px.
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart' show rootBundle;
 

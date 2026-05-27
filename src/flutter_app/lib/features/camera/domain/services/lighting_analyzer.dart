@@ -142,12 +142,6 @@ class LightingAnalyzer {
     final tips = _generateTips(quality, backlight, sceneClass, timeOfDay);
 
     // Build enriched LightingInfo
-    final centerMean = centerSamples.isNotEmpty
-        ? centerSamples.reduce((a, b) => a + b) / centerSamples.length
-        : 128.0;
-    final peripheryMean = peripherySamples.isNotEmpty
-        ? peripherySamples.reduce((a, b) => a + b) / peripherySamples.length
-        : 128.0;
     final overallMean = allSamples.reduce((a, b) => a + b) / allSamples.length;
 
     final intensity = (overallMean / 255.0).clamp(0.0, 1.0);

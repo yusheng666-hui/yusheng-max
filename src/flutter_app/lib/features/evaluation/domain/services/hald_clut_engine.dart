@@ -16,8 +16,6 @@ class HaldClutEngine {
   /// Cached Hald CLUT textures keyed by preset ID.
   final Map<String, _HaldTexture> _cache = {};
 
-  bool _disposed = false;
-
   /// Load a Hald CLUT PNG from assets into a usable texture.
   Future<void> loadPreset(String presetId) async {
     if (_cache.containsKey(presetId)) return;
@@ -69,7 +67,6 @@ class HaldClutEngine {
     final resultBytes = Uint8List(outW * outH * 4);
     final haldData = hald.data;
     final haldW = hald.width;
-    final haldL2 = level * level; // 64
 
     for (int y = 0; y < outH; y++) {
       for (int x = 0; x < outW; x++) {

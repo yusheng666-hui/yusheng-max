@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../domain/providers.dart';
 import '../../../recommendation/domain/services/local_pose_loader.dart';
 
 /// Card widget for the Pose Square grid.

@@ -231,11 +231,6 @@ void main() {
       );
 
       expect(resultsWithBacklight, isNotEmpty);
-      // back-light tag should give some presets a reason about backlight
-      final backlightReasons = resultsWithBacklight
-          .where((r) => r.reasonZh.contains('逆光'));
-      // The backlight reason only fires on exact lighting match,
-      // which depends on preset tags — just verify results exist
     });
 
     test('soft light gets lighting tag fallback from timeOfDay', () {

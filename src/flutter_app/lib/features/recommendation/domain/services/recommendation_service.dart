@@ -1,7 +1,6 @@
 /// Recommendation domain service — fetches and caches pose recommendations.
 
 import '../../../../shared/models/recommendation.dart';
-import '../../../../shared/models/scene_features.dart';
 
 /// Parsed response from the recommendation API.
 class RecommendationResponse {

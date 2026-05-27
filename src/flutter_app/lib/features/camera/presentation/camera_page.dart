@@ -16,17 +16,13 @@ import '../../recommendation/presentation/widgets/recommendation_panel.dart';
 import '../domain/providers.dart';
 import '../domain/services/pose_detector.dart';
 import '../domain/services/scene_analyzer.dart';
-import '../domain/services/hybrid_scene_analyzer.dart';
 import '../domain/services/lighting_analyzer.dart';
-import '../domain/services/expression_detector.dart';
 import 'widgets/expression_guide_overlay.dart';
 import 'widgets/person_count_selector.dart';
 import '../../../core/api_client.dart';
 import '../../../core/connectivity_checker.dart';
-import '../../../core/tts_service.dart';
 import '../../../shared/models/scene_features.dart';
 import '../../recommendation/domain/services/recommendation_service.dart';
-import '../../recommendation/domain/services/local_recommendation_engine.dart';
 import '../../evaluation/presentation/review_edit_page.dart';
 import '../../evaluation/presentation/widgets/evaluation_result_sheet.dart';
 import '../../evaluation/domain/providers.dart';
@@ -605,7 +601,7 @@ class _CameraPageState extends ConsumerState<CameraPage>
         fit: StackFit.expand,
         children: [
           // Live camera preview
-          if (isInitialized) CameraPreview(controller: controller!),
+          if (isInitialized) CameraPreview(controller: controller),
 
           // AR skeleton overlay
           const ArOverlay(),

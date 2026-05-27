@@ -56,7 +56,7 @@ class HybridSceneAnalyzer {
   /// Initialize ML models. Call once at startup.
   Future<void> init() async {
     final sceneOk = await _tfClassifier.load();
-    final depthOk = await _tfDepth.load();
+    await _tfDepth.load();
     _modelsLoaded = sceneOk; // depth is optional
   }
 

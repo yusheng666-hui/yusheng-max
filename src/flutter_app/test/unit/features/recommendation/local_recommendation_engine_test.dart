@@ -45,9 +45,8 @@ LocalPose _makePose({
 /// Fake loader with pre-populated poses.
 class FakeLocalPoseLoader extends LocalPoseLoader {
   final Map<String, List<LocalPose>> _byScene;
-  final List<LocalPose> _all;
 
-  FakeLocalPoseLoader(this._byScene, this._all);
+  FakeLocalPoseLoader(this._byScene);
 
   @override
   Map<String, List<LocalPose>> get posesByScene => _byScene;
@@ -80,8 +79,6 @@ void main() {
     _makePose(id: 'ind-1', sceneKey: 'indoor', style: ['sweet', 'casual'], difficulty: 'beginner', category: 'couple', qualityScore: 4.1),
   ];
 
-  final allPoses = [...outdoorPoses, ...streetPoses, ...indoorPoses];
-
   final sceneMap = <String, List<LocalPose>>{
     'outdoor': outdoorPoses,
     'street': streetPoses,
@@ -89,7 +86,7 @@ void main() {
   };
 
   LocalRecommendationEngine _engine() {
-    return LocalRecommendationEngine(FakeLocalPoseLoader(sceneMap, allPoses));
+    return LocalRecommendationEngine(FakeLocalPoseLoader(sceneMap));
   }
 
   // ── Tests ──────────────────────────────────────────────────────
@@ -97,7 +94,7 @@ void main() {
   group('LocalRecommendationEngine.recommend()', () {
     test('DEBUG: dump internal state', () {
       // Verify the fake loader works
-      final loader = FakeLocalPoseLoader(sceneMap, allPoses);
+      final loader = FakeLocalPoseLoader(sceneMap);
       final directPoses = loader.getPosesForScene('outdoor');
       if (directPoses.isEmpty) {
         fail('FakeLoader.getPosesForScene("outdoor") returned empty. '
@@ -137,7 +134,7 @@ void main() {
     });
 
     test('returns empty for no matching poses and no outdoor fallback', () {
-      final emptyLoader = FakeLocalPoseLoader(<String, List<LocalPose>>{}, []);
+      final emptyLoader = FakeLocalPoseLoader(<String, List<LocalPose>>{});
       final engine = LocalRecommendationEngine(emptyLoader);
       final response = engine.recommend(sceneClass: 'outdoor-nature', topK: 3);
 
@@ -260,10 +257,7 @@ void main() {
       final nightPoses = [
         _makePose(id: 'night-1', sceneKey: 'night', style: ['moody']),
       ];
-      final loader = FakeLocalPoseLoader(
-        {'night': nightPoses},
-        nightPoses,
-      );
+      final loader = FakeLocalPoseLoader({'night': nightPoses});
       final engine = LocalRecommendationEngine(loader);
       final response = engine.recommend(sceneClass: 'night-scene', topK: 3);
 

@@ -6,7 +6,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/providers.dart';
-import '../../../video_guide/domain/camera_movements.dart';
 
 class MovementGuideOverlay extends ConsumerWidget {
   const MovementGuideOverlay({super.key});
